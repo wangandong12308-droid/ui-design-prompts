@@ -1,0 +1,8 @@
+{
+  "runtime": "static",
+  "platformVersion": 15,
+  "entry": "index.html",
+  "name": "页面设计与 UI 交互资料合集",
+  "slug": "ui",
+  "managedCronJobs": []
+}

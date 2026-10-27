@@ -1,0 +1,2361 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="color-scheme" content="light dark" />
+    <link rel="icon" href="data:," />
+    <title>页面设计与 UI 交互资料合集</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@600;700;900&family=Noto+Sans+SC:wght@400;500;700&display=swap" rel="stylesheet" />
+    <style>
+      :root{
+        color-scheme: light dark;
+        --bg:#fbfbf8;
+        --surface:#ffffff;
+        --surface-2:#f3f1ea;
+        --ink:#1b1a17;
+        --ink-2:#55534b;
+        --ink-3:#8a877c;
+        --line:#e3e0d5;
+        --accent:#c8431b;
+        --accent-ink:#c8431b;
+        --accent-tint:#fbe9e1;
+        --chip-bg:#ffffff;
+        --shadow:0 1px 2px rgba(27,26,23,.05),0 8px 24px -18px rgba(27,26,23,.25);
+        --serif:"Noto Serif SC","Songti SC","STSong","SimSun",serif;
+        --sans:"Noto Sans SC",-apple-system,BlinkMacSystemFont,"PingFang SC","Hiragino Sans GB","Microsoft YaHei",sans-serif;
+      }
+      @media (prefers-color-scheme: dark){
+        :root{
+          --bg:#141412;
+          --surface:#1e1e1b;
+          --surface-2:#26261f;
+          --ink:#edeae1;
+          --ink-2:#b7b2a4;
+          --ink-3:#857f70;
+          --line:#34332b;
+          --accent:#ff8a5c;
+          --accent-ink:#ff8a5c;
+          --accent-tint:#3a2318;
+          --chip-bg:#1e1e1b;
+          --shadow:0 1px 2px rgba(0,0,0,.4),0 8px 24px -18px rgba(0,0,0,.7);
+        }
+      }
+      *{box-sizing:border-box;}
+      html{scroll-behavior:smooth;}
+      @media (prefers-reduced-motion: reduce){ html{scroll-behavior:auto;} }
+      body{
+        margin:0;background:var(--bg);color:var(--ink);
+        font-family:var(--sans);font-size:15px;line-height:1.65;
+        -webkit-font-smoothing:antialiased;
+      }
+      .wrap{max-width:1180px;margin:0 auto;padding:0 20px;}
+
+      /* ---------- header ---------- */
+      header.top{padding:52px 0 6px;}
+      .kicker{font-size:12.5px;letter-spacing:.22em;color:var(--accent-ink);font-weight:700;margin:0 0 14px;}
+      h1{font-family:var(--serif);font-weight:900;font-size:clamp(30px,5.4vw,46px);line-height:1.2;margin:0 0 14px;}
+      .lede{max-width:46em;color:var(--ink-2);font-size:15.5px;margin:0;}
+      .lede b{color:var(--ink);}
+      .stats{display:flex;flex-wrap:wrap;gap:10px 34px;margin-top:26px;padding:16px 0;border-top:1px solid var(--line);border-bottom:1px solid var(--line);}
+      .stat{display:flex;align-items:baseline;gap:9px;}
+      .stat .num{font-family:var(--serif);font-weight:900;font-size:24px;color:var(--accent-ink);line-height:1;}
+      .stat .lab{font-size:13px;color:var(--ink-2);}
+
+      /* ---------- quickref ---------- */
+      .quickref{margin-top:22px;background:var(--surface-2);border:1px solid var(--line);border-radius:12px;padding:16px 18px;}
+      .quickref h2{font-size:13px;letter-spacing:.14em;margin:0 0 10px;color:var(--ink);font-weight:700;}
+      .quickref ul{margin:0;padding:0;list-style:none;display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:6px 26px;}
+      .quickref li{font-size:13.5px;color:var(--ink-2);padding-left:14px;position:relative;}
+      .quickref li::before{content:"";position:absolute;left:0;top:.62em;width:5px;height:5px;border-radius:50%;background:var(--accent);}
+      .quickref li b{color:var(--ink);font-weight:700;}
+
+      /* ---------- toolbar ---------- */
+      .toolbar{position:sticky;top:0;z-index:40;background:var(--bg);padding:16px 0 12px;border-bottom:1px solid var(--line);}
+      .searchrow{display:flex;gap:10px;align-items:center;}
+      .searchbox{flex:1;display:flex;align-items:center;gap:9px;background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:0 13px;height:44px;box-shadow:var(--shadow);}
+      .searchbox svg{flex:none;color:var(--ink-3);}
+      .searchbox input{flex:1;border:0;outline:0;background:transparent;font:inherit;font-size:15px;color:var(--ink);min-width:0;}
+      .searchbox input::placeholder{color:var(--ink-3);}
+      .count{flex:none;font-size:13px;color:var(--ink-2);white-space:nowrap;}
+      .count b{color:var(--accent-ink);font-weight:700;}
+      .advtoggle{flex:none;display:inline-flex;align-items:center;gap:6px;height:44px;padding:0 14px;border:1px solid var(--line);border-radius:10px;background:var(--surface);color:var(--ink-2);font:inherit;font-size:13.5px;cursor:pointer;}
+      .advtoggle[aria-pressed="true"]{background:var(--accent-tint);border-color:var(--accent);color:var(--accent-ink);font-weight:700;}
+      .chips{display:flex;flex-wrap:wrap;gap:7px;margin-top:12px;}
+      .chip{display:inline-flex;align-items:center;gap:6px;padding:5px 12px;border:1px solid var(--line);border-radius:999px;background:var(--chip-bg);color:var(--ink-2);font-size:13px;text-decoration:none;cursor:pointer;}
+      .chip:hover{border-color:var(--accent);color:var(--accent-ink);}
+      .chip .n{font-size:11px;color:var(--ink-3);font-variant-numeric:tabular-nums;}
+      .chip:hover .n{color:var(--accent-ink);}
+
+      /* ---------- sections ---------- */
+      section.cat{margin-top:46px;scroll-margin-top:150px;}
+      .cat-head{display:flex;align-items:baseline;gap:14px;border-bottom:2px solid var(--ink);padding-bottom:10px;margin-bottom:18px;}
+      .cat-head .no{font-family:var(--serif);font-weight:900;font-size:30px;color:var(--accent-ink);line-height:1;}
+      .cat-head h2{font-family:var(--serif);font-weight:700;font-size:24px;margin:0;line-height:1.25;}
+      .cat-head .en{font-size:12.5px;letter-spacing:.12em;color:var(--ink-3);text-transform:uppercase;}
+      .cat-head .cnt{margin-left:auto;font-size:13px;color:var(--ink-3);white-space:nowrap;}
+      .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,330px),1fr));gap:14px;}
+
+      .card{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:16px 18px 14px;box-shadow:var(--shadow);display:flex;flex-direction:column;}
+      .card-top{display:flex;align-items:center;gap:8px;margin-bottom:7px;}
+      .card-top .idx{font-size:11.5px;color:var(--ink-3);font-variant-numeric:tabular-nums;letter-spacing:.06em;}
+      .badge{margin-left:auto;font-size:11px;font-weight:700;color:var(--accent-ink);background:var(--accent-tint);border-radius:5px;padding:2px 7px;letter-spacing:.04em;}
+      .card h3{font-size:16.5px;font-weight:700;margin:0;line-height:1.4;}
+      .card .en{font-size:12px;color:var(--ink-3);letter-spacing:.03em;margin:2px 0 9px;}
+      .card .desc{font-size:14px;color:var(--ink);margin:0 0 11px;}
+      .card dl{margin:auto 0 0;border-top:1px dashed var(--line);padding-top:10px;display:grid;gap:7px;}
+      .card .row{display:grid;grid-template-columns:34px 1fr;gap:8px;}
+      .card dt{font-size:11.5px;font-weight:700;letter-spacing:.1em;color:var(--accent-ink);padding-top:2px;}
+      .card dd{margin:0;font-size:13px;color:var(--ink-2);line-height:1.6;}
+
+      .noresult{display:none;margin:56px 0;text-align:center;color:var(--ink-2);}
+      .noresult .big{font-family:var(--serif);font-size:22px;color:var(--ink);margin-bottom:6px;}
+      .noresult button{margin-top:12px;font:inherit;font-size:14px;padding:8px 18px;border-radius:9px;border:1px solid var(--line);background:var(--surface);color:var(--ink);cursor:pointer;}
+      .noresult button:hover{border-color:var(--accent);color:var(--accent-ink);}
+
+      /* ---------- base index ---------- */
+      .base-groups{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,320px),1fr));gap:14px;}
+      .base-group{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:15px 18px;box-shadow:var(--shadow);}
+      .base-group h3{font-size:14.5px;margin:0 0 10px;font-weight:700;}
+      .base-group h3 span{color:var(--ink-3);font-weight:400;font-size:12.5px;margin-left:6px;}
+      .tags{display:flex;flex-wrap:wrap;gap:6px;}
+      .tag{font-size:12.5px;color:var(--ink-2);background:var(--surface-2);border-radius:6px;padding:3px 9px;}
+
+      /* ---------- footer ---------- */
+      footer{margin-top:64px;border-top:1px solid var(--line);padding:30px 0 56px;}
+      footer h2{font-size:13px;letter-spacing:.14em;margin:0 0 12px;}
+      .caveat{background:var(--surface-2);border:1px solid var(--line);border-radius:12px;padding:14px 18px;font-size:13.5px;color:var(--ink-2);margin-bottom:26px;}
+      .caveat b{color:var(--ink);}
+      .sources{list-style:none;margin:0;padding:0;display:grid;gap:7px;}
+      .sources li{font-size:13.5px;color:var(--ink-2);}
+      .sources a{color:var(--accent-ink);text-decoration:none;word-break:break-all;}
+      .sources a:hover{text-decoration:underline;}
+      .foot-note{margin-top:26px;font-size:12.5px;color:var(--ink-3);}
+
+     
+.card ul.pts{margin:0;padding-left:16px;display:grid;gap:3px;}
+.card dd a{color:var(--accent-ink);text-decoration:none;word-break:break-all;}
+.card dd a:hover{text-decoration:underline;}
+.swatches{display:flex;align-items:center;gap:5px;flex-wrap:wrap;margin:0 0 11px;}
+.swatches .sw{width:18px;height:18px;border-radius:5px;border:1px solid var(--line);flex:none;}
+.swatches .swhex{font-size:11px;color:var(--ink-3);font-variant-numeric:tabular-nums;}
+.fontdemo{font-size:19px;margin:0 0 10px;color:var(--ink);letter-spacing:.02em;}
+.fontdemo.serif{font-family:var(--serif);font-weight:700;}
+ @media (max-width:560px){
+        header.top{padding-top:36px;}
+        .count{display:none;}
+        section.cat{scroll-margin-top:170px;}
+        .cat-head .en{display:none;}
+      }
+    </style>
+  </head>
+  <body>
+    <div class="wrap">
+      <header class="top">
+        <p class="kicker">UI PATTERN LIBRARY</p>
+        <h1>页面设计与 UI 交互资料合集</h1>
+        <p class="lede">一个合集，三部分内容：<b>交互模式</b>（导航、表单、手势、转场、图表等，含「12 种高级交互」全文）、<b>视觉设计风格</b>（字体与排版、版式风格、页面类型、组件风格、配色系统，只讲长什么样）、<b>虚拟币量化</b>（为手机端虚拟币量化研究平台搜集的币种列表、K 线、提醒、回测、订单簿、小组件等模式，每条绑一个虚拟币场景）。每条给出<b>是什么、实现要点（含可落地的时长 / 阈值 / 尺寸 / 色值）、适用场景</b>；数值带「约」的是经验值或落地建议值，不是官方规范。同类交互模式已去重、只保留更具体的版本并标为「进阶版」；「12 种高级交互」一节为有意完整收录，与基础篇索引有重叠。</p>
+        <div class="stats">
+          <div class="stat"><span class="num" id="statTotal">159</span><span class="lab">条模式</span></div>
+          <div class="stat"><span class="num" id="statCats">34</span><span class="lab">个分类</span></div>
+          <div class="stat"><span class="num">41</span><span class="lab">条基础篇索引</span></div>
+          <div class="stat"><span class="num">36</span><span class="lab">条视觉设计风格</span></div>
+ <div class="stat"><span class="num">85</span><span class="lab">条虚拟币量化模式</span></div>
+ <div class="stat"><span class="num">4</span><span class="lab">条进阶版（同类更优变体）</span></div>
+        </div>
+        <div class="quickref">
+          <h2>通用基准速记</h2>
+          <ul>
+            <li><b>动效时长（M3）</b>：短档 50–200ms、中档 250–400ms、长档 450–600ms，强调动效约 500ms</li>
+            <li><b>iOS 弹簧</b>：默认阻尼 1.0、响应约 0.4s；抽屉 / 表单约 0.8 / 0.3s</li>
+            <li><b>触控目标</b>：iOS 约 44pt、Android 约 48dp，小于这个尺寸先放大热区</li>
+            <li><b>对比度</b>：正文 4.5:1、大字 3:1，图标与描边不低于 3:1</li>
+          </ul>
+        </div>
+              <div class="quickref">
+          <h2>视觉设计与虚拟币速记</h2>
+          <ul>
+            <li><b>字阶</b>：12 / 14 / 16 / 20 / 24 / 32px，正文行高约 1.5–1.7、标题约 1.2–1.3</li>
+            <li><b>数字</b>：价格 / 金额 / 倒计时用等宽数字（tabular-nums），跳动时行宽不抖</li>
+            <li><b>字体许可</b>：思源 / Noto / LXGW 文楷均为 SIL OFL，但商用、嵌入、改字再分发前须再核对许可原文（LXGW 有保留字名条款）</li>
+            <li><b>配色</b>：第 23 类 5 套配色多为组合建议（约值），文字 / 背景组合须用对比度工具实测后才算达标</li>
+            <li><b>涨跌色</b>：红涨绿跌与绿涨红跌双轨可切换，且始终配 ↑↓ 箭头与 +/− 号，不只靠颜色</li>
+            <li><b>长按币种</b>：约 400–500ms + 轻震动出预览卡与菜单，菜单约 5–6 项，预览卡内不放按钮</li>
+          </ul>
+        </div>
+      </header>
+
+      <div class="toolbar">
+        <div class="searchrow">
+          <label class="searchbox">
+            <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.8-3.8"/></svg>
+            <input id="q" type="search" placeholder="搜索模式名 / 英文术语 / 场景，如：抽屉、OTP、思源、粗野主义、长按、回测" autocomplete="off" />
+          </label>
+          <button class="advtoggle" id="advBtn" aria-pressed="false" title="只显示标注为进阶版的条目">只看进阶版</button>
+          <span class="count" id="count"></span>
+        </div>
+        <nav class="chips" id="chips" aria-label="分类跳转"></nav>
+      </div>
+
+      <main id="catalog"></main>
+
+      <div class="noresult" id="noresult">
+        <div class="big">没有匹配的模式</div>
+        <div>换个关键词试试，或清掉筛选看全部。</div>
+        <button id="clearBtn" type="button">清除搜索与筛选</button>
+      </div>
+
+      <section class="cat" id="cat-base">
+        <div class="cat-head">
+          <span class="no">附</span>
+          <h2>基础篇索引</h2>
+          <span class="en">Starter Set</span>
+          <span class="cnt">41 条 · 已收录的入门合集，此处仅列名索引</span>
+        </div>
+        <div class="base-groups" id="baseGroups"></div>
+      </section>
+
+      <footer>
+        <div class="caveat">
+          <b>数值说明：</b>未在公开规范中找到的精确值（某些阈值、时长）在正文中均以「约」或范围标示，不作规范引用；个别小程序规范细节以公开二手摘要为佐证。内容以 Material Design 3 经典档位与 Apple HIG 通用原则为准，未逐一核对 iOS 26 / M3 Expressive 最新版改动，落地前建议对照当期官方文档复核。
+        </div>
+        <div class="caveat">
+          <b>视觉设计部分（第 19–23 类）说明：</b><b>字体商用提示</b>——文中「公开许可」均引自公开页面，仅作选型参考；正式上线、嵌入 App、做 Logo / 商标或改字再分发前，须再次核对许可原文与保留字名条款，本页不构成法律意见。文泉驿等其他开源中文字体的逐字许可未在本轮逐一核对，故未列入推荐。<b>对比度提示</b>——WCAG AA 要求正文 ≥4.5:1、大字 ≥3:1、非文本组件 ≥3:1；第 23 类配色除注明来源的单色外，均为组合建议而非某设计系统的官方色板，每对「文字 / 背景」组合须实测对比度后才能宣称通过 AA / AAA，彩色按钮文字尤其要验算。圆角锚点以 Tailwind v2 文档为准，v4 与 v2 默认值略有出入，v4 项目以项目内主题为准。「中式留白」的具体色值与竖排用法为落地建议（约值），未找到单一权威来源背书。
+        </div>
+        <div class="caveat">
+          <b>虚拟币部分（第 24–34 类）说明：</b>与「虚拟币量化研究平台 UI 资料」页同源（2026-10-25 公开网页检索，未登录任何账号），每条来源附在卡片内。<b>未逐 App 真机验证</b>：Binance / OKX / TradingView / CoinMarketCap / CoinGecko / Dexscreener 当前版本的具体入口、阈值、动画时长没有登录验证，「约」数值均为落地建议值。标【提案】的条目（摇一摇随机币、手绘形态搜相似币、里程碑彩带、3D 币面翻转卡片、价格粒子背景等）未找到同款公开加密产品佐证，只给实现要点，不冒充已有功能。未确认项：各 App 长按菜单的具体项顺序；iOS Live Activity 对加密价格类 App 的具体存活规则（以 Apple 官方文档为准）；免费行情源的延迟时长（「延迟 15 分钟」为示例说法，非实测值）；Smart Stack 堆栈上限各资料说法不一（7 或 10），卡片中写「约 7–10 个」；各币种在 Binance 小组件中的可用性未逐一核实。
+        </div>
+        <h2>主要来源</h2>
+        <ul class="sources">
+          <li>Apple HIG 组件与规范总览（导航、表单、列表、搜索、动效、触觉、加载、空态、引导、深色、图表、通知）：<a href="https://www.skillsdirectory.com/skills/dickwu-apple-design" target="_blank" rel="noopener">skillsdirectory.com/skills/dickwu-apple-design</a></li>
+          <li>Apple 弹簧动效参数与速度交接：<a href="https://explainx.ai/skills/emilkowalski/skills/apple-design" target="_blank" rel="noopener">explainx.ai/skills/emilkowalski/skills/apple-design</a></li>
+          <li>Material Design 3 令牌（时长、圆角、间距、状态层）：<a href="https://pub.dev/packages/material_design/versions/0.27.0" target="_blank" rel="noopener">pub.dev/packages/material_design</a></li>
+          <li>iOS / Android 动效对比与 M3 缓动：<a href="https://www.appypie.com/blog/mobile-app-animation-guide" target="_blank" rel="noopener">appypie.com/blog/mobile-app-animation-guide</a></li>
+          <li>移动端模式总览（底部导航、下拉刷新、滑动操作、引导、空态）：<a href="https://www.uxpin.com/studio/blog/what-is-mobile-ui/" target="_blank" rel="noopener">uxpin.com/studio/blog/what-is-mobile-ui</a></li>
+          <li>引导模式（Nickel Tour、Coach Marks、清单、渐进式）：<a href="https://www.toptal.com/designers/product-design/guide-to-onboarding-ux" target="_blank" rel="noopener">toptal.com — Guide to Onboarding UX</a>；<a href="https://useronboarding.academy/post/onboarding-ui" target="_blank" rel="noopener">useronboarding.academy</a></li>
+          <li>滑动删除阈值与撤销：<a href="https://copyprogramming.com/howto/how-to-swipe-to-delete-on-recyclerview" target="_blank" rel="noopener">copyprogramming.com</a></li>
+          <li>iOS 边缘返回与甩动阈值：<a href="https://copyprogramming.com/howto/how-to-detect-back-swipe-in-wkwebview" target="_blank" rel="noopener">copyprogramming.com</a></li>
+          <li>M3 模态抽屉过渡：<a href="https://cdn.jsdelivr.net/npm/material-web-hasi@0.1.0-alpha.0/navigationdrawer/lib/_navigation-drawer-modal.scss" target="_blank" rel="noopener">material-web navigation drawer（源码）</a></li>
+          <li>小程序页面栈与信息架构：<a href="https://blog.mamingjuan.cn/other/05.work-notes/80.miniprogram-notes.html" target="_blank" rel="noopener">blog.mamingjuan.cn 小程序笔记</a></li>
+          <li>视觉设计（字体许可与配对）：<a href="https://notofonts.github.io/noto-docs/website/use/" target="_blank" rel="noopener">Noto Fonts 许可说明</a>；<a href="https://raw.githubusercontent.com/lxgw/LxgwWenkaiGB/main/OFL.txt" target="_blank" rel="noopener">LXGW WenKai OFL 原文</a>；<a href="https://fontalternatives.com/blog/geist-vs-inter-vs-satoshi-product-ui/" target="_blank" rel="noopener">UI 字体对比</a></li>
+          <li>视觉设计（字阶与组件基线）：<a href="https://ant.design/components/typography/" target="_blank" rel="noopener">Ant Design Typography</a>；<a href="https://v2.tailwindcss.com/docs/border-radius" target="_blank" rel="noopener">Tailwind 圆角档位（v2）</a>；<a href="https://accessibility.arizona.edu/web-apps/color-contrast" target="_blank" rel="noopener">WCAG 对比度标准</a></li>
+          <li>视觉设计（风格与页面）：<a href="https://superdesign.dev/styles" target="_blank" rel="noopener">Superdesign 风格库</a>；<a href="https://neubrutalism.com/" target="_blank" rel="noopener">Neo-Brutalism 风格库</a>；<a href="https://ggprompts.com/styles/dark-mode-material.html" target="_blank" rel="noopener">Material 3 深色配色</a>；<a href="https://www.fusioncharts.com/blog/dashboard-design-best-practices" target="_blank" rel="noopener">仪表盘设计最佳实践</a></li>
+          <li>虚拟币部分：来源逐条附在各卡片内（Apple HIG 与支持文档、Material Design 3、TradingView / Binance / OKX / CoinMarketCap / CoinGecko / Dexscreener 等公开页面与公开设计文章）。</li>
+        </ul>
+        <p class="foot-note">其余未标注来源的数值均为行业经验值，正文中以「约」标示。</p>
+      </footer>
+    </div>
+
+    <script>
+    var CATS = [
+    {id:"nav", no:"01", cn:"导航", en:"Navigation", items:[
+      ["底部 Tab 栏","Bottom Navigation / Tab Bar","3–5 个平级一级入口，图标 + 文字，选中态用颜色 / 填充图标区分而非位移。","切换约 150–250ms 淡入 / 交叉淡化，保留各 Tab 滚动位置与返回栈，选中项触控区不小于 44pt / 48dp；超过 5 项改抽屉或“更多”。","首页、发现、消息、我的等高频平级页面。",0],
+      ["顶部导航栏","Top App Bar / Navigation Bar","承载标题、返回与 1–3 个操作，分大标题（仅顶级页）与标准标题两种。","大标题约 34pt、折叠后约 44pt 高，滚动时标题缩小并可渐变为不透明背景；操作图标约 22pt、间距约 8pt。","层级页、详情页、设置页。",0],
+      ["侧边抽屉导航","Navigation Drawer / Sidebar","从边缘滑出的二级导航面板，遮罩 + 主内容右移或覆盖。","M3 模态抽屉约 250ms 标准缓动，宽度约屏幕 70–85%（平板可常驻为 Rail / Sidebar），点击遮罩或左滑关闭，打开时焦点困在面板内。","功能多、层级深的工具 / 管理类 App；移动端抽屉行为区别于 Dashboard 侧边栏。",0],
+      ["分段控制器","Segmented Control / Segmented Button","同一页面内切换 2–4 个互斥视图，滑块指示选中段。","滑块滑动约 200–300ms 弹簧 / 标准缓动，段宽等分或按文字自适应，选中段文字加粗或反色；段数多于 4 改可横滑标签页。","日 / 周 / 月、日程 / 任务、订单状态切换。",0],
+      ["可滚动标签页","Scrollable Tabs / Tab Layout","顶部横向可滑的分类标签，选中下划线 / 胶囊跟随。","指示器约 200ms 跟随滑动，选中标签自动居中，标签页与内容页手势联动但保留按钮可点；标签过多时不要等宽压缩。","资讯频道、电商分类、视频分区。",0],
+      ["面包屑","Breadcrumb","显示当前层级路径并可逐级回跳，移动端常只显示上一级 + 标题。","移动端折叠为“‹ 上一级”或仅保留首尾两级，桌面端完整路径用“/”分隔、可点击；层级超过 3–4 级要精简信息架构。","文件管理、电商类目、文档 / 知识库、后台 Web 端。",0],
+      ["返回手势","Interactive Pop Gesture / Edge Swipe Back","从左边缘右滑返回上一页，页面跟手移动。","进度 = 横向位移 / 屏宽，约超过 30% 或快速甩动（约 >500pt/s）松手完成，否则弹簧回弹；与横滑内容冲突时边缘约 20pt 内优先返回。","所有层级页；iOS 默认行为，Android 需与系统预测性返回对齐。",0],
+      ["深层链接着陆","Deep Link Landing / Deferred Deep Link","从分享 / 搜索 / 推送直达某详情，未登录或未安装时先承接再跳转。","着陆页先显示目标摘要骨架 / 占位，登录后自动续跳、不丢失参数，失败时给“去首页 / 复制链接”兜底；小程序注意页面栈上限约 10 层。","商品 / 文章 / 活动分享、推送召回、扫码进入。",0],
+      ["悬浮操作按钮 + 展开菜单","FAB + Speed Dial","右下角主操作按钮，点击展开 2–4 个次级操作呈扇形 / 纵列。","展开约 200–300ms 交错出现（每项间隔约 30–50ms），遮罩可点收起，展开时主按钮旋转约 45°；主操作必须唯一且高频。","新建笔记 / 发帖 / 记账、地图打车类主操作。",0],
+      ["滚动隐藏导航","Hide-on-Scroll Navigation","向下滚隐藏底部栏 / 顶栏，向上滚或触顶时复现。","滚动方向变化后约 150–250ms 滑出 / 滑入，触底或输入时强制显示；不要在表单页隐藏提交按钮。","长 feed、阅读、图片流等沉浸式浏览。",0]
+    ]},
+    {id:"onboarding", no:"02", cn:"引导与新手", en:"Onboarding", items:[
+      ["启动页","Launch Screen / Splash","冷启动瞬间显示的品牌占位，不可做成可交互广告页。","与首屏背景 / 品牌色一致、无加载文案堆砌，约 1s 内过渡到首屏或骨架，超时才显示加载指示；启动页 ≠ 引导页。","所有 App 冷启动；品牌色 + Logo 居中即可。",0],
+      ["引导轮播","Onboarding Carousel / Nickel Tour","首次进入 3–4 页价值点插画 + 一句话，底部圆点 + 跳过。","每页一句话、只讲核心价值不讲操作手册，左右滑动约 300ms，始终可跳过，最后一页主按钮进入；超过 4 页完成率明显下降。","新产品首次启动、核心卖点单一的 App。",0],
+      ["权限请求","Permission Priming / Contextual Request","在真正需要功能前一屏先用自家弹窗讲清用途，再调系统弹窗。","只在触发功能时请求（如点“开始导航”才要定位），拒绝后给“去设置开启”入口且功能降级可用；启动时一次性索要多个权限是大忌。","定位、相机、相册、通知、麦克风。",0],
+      ["新手遮罩引导","Coach Marks / Spotlight Tour","页面变暗、镂空高亮某个控件并配一句说明，逐个进行。","一次只高亮一个元素、文案 ≤2 行、随时可退出，镂空区与控件对齐且不遮挡下一步按钮；与“引导气泡”的区别在于全屏遮罩 + 顺序引导。","复杂工具、改版后新功能、新手首日任务。",0],
+      ["功能点气泡提示","Feature Tooltip / Popover Hint","锚定在新功能旁的小气泡，点外部或“知道了”消失。","气泡箭头指向目标、宽度约不超过 280pt、出现约 200ms 淡入 + 轻微上移，仅对相关用户展示一次；不要同时弹多个。","新入口、新按钮含义、改版提示。",0],
+      ["进度式新手任务","Onboarding Checklist / Progress Tasks","以“完成 3 步解锁全部功能”为清单，逐项打勾。","任务 3–5 项、每项可点直达、完成后即时打勾 + 进度条推进，全部完成给奖励 / 祝贺反馈；未完成项常驻个人页而非弹窗骚扰。","社交、创作、金融类需完善资料 / 首单的 App。",0],
+      ["渐进式引导","Progressive Onboarding / Learn by Doing","不集中讲课，而是在用户第一次真正用到某功能时才教。","把教程拆到任务流里（如第一次发帖才提示加标签），用空态 + 内联提示代替长篇引导；分步兴趣选择属于其中一种采集形式。","功能多、上手曲线陡的 App；与轮播互补而非替代。",0],
+      ["延迟注册","Lazy Registration / Guest First","先让用户浏览 / 加购，到必须交易时才要求登录。","游客态保留购物车与浏览记录，登录后自动合并数据；注册流程只留必填项，其余后补。","电商、内容、工具类 App，降低首日流失。",0]
+    ]},
+    {id:"states", no:"03", cn:"状态页面", en:"States", items:[
+      ["空状态","Empty State / Blank Slate","列表 / 收藏 / 消息为空时的插画 + 一句话 + 主行动。","说清“为什么空 + 下一步做什么”，给一个可点的主按钮（如“去添加”），不要只放悲伤插画；首次空与用后清空的文案应不同。","收藏、订单、消息、搜索无历史等。",0],
+      ["菊花 / 进度环加载","Spinner / Circular Progress","短时等待的旋转指示，配可选文案（骨架屏之外的加载形式）。","小尺寸约 20–24pt、居中或行内，约超过 1s 才出现文案（如“正在加载…”），避免与骨架屏叠加使用。","按钮内加载、刷新、下拉区域、小范围异步。",0],
+      ["线性进度条","Linear Progress / Determinate Bar","已知进度的条形进度，用于上传 / 下载 / 安装。","有真实进度时用确定性进度条并显示百分比，无真实进度用不定式来回滑动；进度回退是大忌，完成时可短暂定格 100%。","文件上传、App 更新、表单提交、导出。",0],
+      ["分步加载","Stepwise Loading / Staged Loading","多阶段任务按步骤逐项打勾（如验证 → 支付 → 出票）。","每步独立状态（等待 / 进行 / 成功 / 失败），失败停在当步并可重试当步而非全部重来；总时长不可预估时不要给虚假百分比。","下单、支付、身份核验、多接口聚合页。",0],
+      ["错误状态","Error State / Failure View","加载失败或操作失败的整页 / 局部提示。","说人话（不把错误码当正文）、给原因 + 一个可操作按钮（重试 / 返回 / 联系客服），错误码小字附后便于反馈；不要用成功色。","接口超时、提交失败、页面崩溃兜底。",0],
+      ["断网状态","Offline State / No Connection","无网络时的专属状态，区别于一般错误。","明确写“无网络连接”而非“加载失败”，提供“重新加载”与“查看离线内容”（如有缓存），网络恢复后可自动重试并提示；图标用断网符号而非通用感叹号。","Feed、地图、音视频、一切联网页。",0],
+      ["无结果状态","No Results / Zero Results","搜索 / 筛选后 0 条时的状态。","回显用户输入的关键词 / 已选条件，给“清除筛选”“换个关键词”两个出口，并推荐 3–6 条相关内容；不要直接跳回空态插画。","搜索、筛选、分类浏览。",0],
+      ["占位图","Placeholder Image / Broken Image Fallback","图片加载失败或暂无图时的灰底 + 图标占位。","保持与原图一致宽高比防布局跳动，失败时显示默认图 / 首字母头像并可点重试；头像用姓名首字 + 固定色比通用灰人像更易识别。","商品图、头像、封面图、富文本图片。",0]
+    ]},
+    {id:"forms", no:"04", cn:"表单与输入", en:"Forms & Input", items:[
+      ["悬浮标签","Floating Label / Float Label","输入时标签从框内上移到框线上方，常与聚焦描边联动。","标签上移约 150–200ms，聚焦时描边 / 标签变主题色，未聚焦且有值时标签保持上浮；错误时标签与描边同变红色。","登录、注册、地址、长表单。",0],
+      ["实时校验与错误提示","Inline Validation","输入中 / 失焦时即时校验并在字段下方显示错误。","输入中只做格式提示、失焦或提交时才判错并标红，避免边输边报错；错误文案说解决办法（如“密码至少 8 位，含字母和数字”）而非“格式错误”，错误字段自动聚焦。","注册、支付、实名认证。",0],
+      ["密码可见切换","Password Visibility Toggle","密码框右侧眼睛图标切换明文 / 密文。","默认密文，点击切换图标状态，切换时不清空内容、不改变光标位置；可配 Caps Lock 提示；避免在公共场景默认明文。","登录、注册、改密、支付密码。",0],
+      ["验证码输入","OTP Input / SMS Code Boxes","4–6 格独立输入框，自动前进、支持粘贴整串。","每格 1 位数字键盘，输满自动跳下一格、删除回退上一格，粘贴时自动拆分填入，倒计时约 60s 后可重发；不要用一个长框让用户自己分段。","短信登录、支付验证、换绑手机。",0],
+      ["日期选择器","Date Picker / Calendar Picker","滚轮式或日历式选日期，移动端常用底部滚轮。","滚轮列宽自适应、选中行高亮并吸附，惯性滚轮 / 刻度吸附是其动效基础；限制可选范围（生日禁未来、行程禁过去）并默认给合理值。","生日、行程、预约、筛选日期。",0],
+      ["时间选择器","Time Picker","时 / 分滚轮或时钟盘选时间，常与日期联用。","12 / 24 小时制跟随系统，分钟步长按场景取 1 / 5 / 15 分钟，跨天需显式提示日期；预约类要禁掉已过时段。","闹钟、预约、外卖自取时间、提醒。",0],
+      ["城市 / 级联选择器","Cascading Picker / Region Selector","省–市–区三级联动滚轮或列表。","选上级后下级联动刷新并重置，常用城市置顶 / 搜索直达，支持按拼音首字母跳转；地址场景要允许“仅到市”不强制到区。","收货地址、籍贯、门店选择。",0],
+      ["多选 / 单选选项组","Chips & Radio / Checkbox Groups","以胶囊或列表行呈现的互斥 / 多重选择。","单选用圆点 / 整行选中态，多选用方框打勾 + 已选计数，选中态颜色与描边同时变化；重点在选项组本身的布局与计数规则。","兴趣、规格、筛选条件、问卷。",0],
+      ["计数器（档位 / 滑杆式）","Counter / Quantity Selector","以“− 数字 +”步进器之外的形式改数量，如滑杆定量、快捷档位（1 / 3 / 5 / 10）。","档位点击约 150ms 高亮切换，超库存时禁用“+”并提示上限，手动输入需做上下限钳制。","团购份数、票数、捐赠金额档位。",0],
+      ["键盘类型与工具栏","Keyboard Types & Input Accessory","按字段调起数字 / 电话 / 邮箱 / 网址键盘，顶部配“上一个 / 下一个 / 完成”工具栏。","手机号用数字键盘、金额用带小数点键盘，工具栏帮助长表单跳转字段，键盘弹起时输入框不被遮挡（页面上推或滚动到可见区）。","所有表单页，尤其长表单与聊天输入。",0],
+      ["搜索建议与历史","Search Suggestions & History","输入时下拉联想词 + 历史记录 + 热门推荐。","输入约 200–300ms 防抖后请求联想，关键词高亮匹配部分，历史可单条删除 / 一键清空，空输入时显示历史与热门而非空白。","电商、内容、地图搜索。",0],
+      ["表单分步向导","Form Wizard / Stepper Form","长表单拆成 2–5 步，顶部步骤指示 + 每步单独校验。","每步只问同类信息、可回退且已填数据不丢失，底部主按钮文案随步骤变（下一步 / 提交），提交前给总览确认页。","开户、理赔、发布商品、入驻申请。",0]
+    ]},
+    {id:"lists", no:"05", cn:"列表与内容", en:"Lists & Content", items:[
+      ["下拉刷新","Pull to Refresh","列表顶部下拉触发刷新，指示器跟手下拉、松手转圈。","下拉约超过 60–80pt 触发，刷新时指示器置顶旋转，完成后列表顶部插入新内容并轻微回弹；仅用于内容会更新的 Feed，静态页不要硬加。","首页 Feed、消息、订单、动态。",0],
+      ["上拉加载更多","Load More / Pagination Button","滑到底部出现“加载更多”按钮，点击加载下一页。","按钮态分“加载中 / 没有更多”，失败可重试当页；比无限滚动更可控，适合需要“回到某条”的场景。","搜索结果、订单、评论、商品列表。",0],
+      ["无限滚动","Infinite Scroll","滑到底自动加载下一页，无需点击。","距底部约 1–2 屏预加载，底部保留加载指示与“已到底”文案，加载失败给重试条；长列表要做虚拟化 / 回收防卡顿。","社交 Feed、短视频流、图片流等纯浏览场景。",0],
+      ["滑动操作","Swipe Actions / Swipe to Delete & Pin","左滑露出删除 / 置顶 / 已读，右滑露出收藏 / 标记。","滑动约超过 50–60% 宽度或快速甩动即触发，露出按钮后点击才执行破坏性操作，删除后配 Snackbar 撤销；手势需配按钮替代入口以满足无障碍。","消息、邮件、待办、购物车。",0],
+      ["拖拽排序","Drag to Reorder / Long-press Drag","长按提起卡片、拖动插入目标位置，其他项让位。","长按约 300–500ms 后提起并放大约 5%、加阴影，拖动时目标位留空隙指示，松手约 200ms 落位；列表同时有左滑操作时需区分长按与滑动。","待办、播放列表、快捷入口自定义、看板。",0],
+      ["吸顶标题","Sticky Header / Pinned Section Header","分组标题滚动到顶部时吸住，直到下一组顶走它。","吸顶栏高度与内容栏一致、背景不透明防透字，切换组时旧标题被新标题平滑顶出；不要让吸顶栏遮挡搜索框。","通讯录、按日期 / 字母分组的列表、长表单分组。",0],
+      ["分组列表","Grouped List / Section List","按字母 / 日期 / 类别分段，配索引或分段头。","右侧字母索引可滑可点、触摸时放大当前字母提示，分组内行高一致；数据量小（<20 条）不必分组。","通讯录、城市选择、账单按月分组。",0],
+      ["瀑布流","Masonry / Waterfall Layout","双列不等高卡片按列补位排列。","按“当前较矮列”补位而非左右轮流，图片先占位定高防跳动，列间距约 8–12pt；卡片高度差异大时比等高网格更省空间。","图片社区、商品灵感流、壁纸。",0],
+      ["时间线","Timeline / Activity Feed","按时间倒序的竖线 + 节点事件流。","竖线贯穿、节点用圆点 / 图标区分类型，同一天事件合并组头，支持点节点展开详情；与电商订单进度时间轴的区别在于通用事件流。","动态、项目进展、健康 / 财务记录。",0],
+      ["折叠 / 展开段落","Expandable Text / Read More","长文本默认显示 2–3 行，点“展开”展开全文。","展开约 200–300ms 高度动画（或直接展开 + 滚动定位），按钮文案在“展开 / 收起”间切换，展开后保持阅读位置；不要在展开时把用户顶回顶部。","商品详情、评论、简介、条款摘要。",0]
+    ]},
+    {id:"search", no:"06", cn:"搜索 / 筛选 / 排序", en:"Search, Filter & Sort", items:[
+      ["筛选抽屉","Filter Drawer / Filter Sheet","底部或侧边弹出的多条件筛选面板，重点在筛选逻辑而非抽屉本身。","已选条件在入口以角标计数回显，面板内“重置 / 确定”固定底部，确定后列表即时刷新并保留筛选态；移动端优先底部抽屉、平板可用侧边栏。","电商、房源、招聘、酒店筛选。",0],
+      ["多条件筛选","Faceted Filter / Multi-criteria Filter","价格区间、品牌、属性等多维并行筛选。","每维独立、可多选，选中项以胶囊回显在结果顶部、点 × 可单删，组合无结果时提示“放宽某条件”而非空白；区间用双滑块或输入框。","电商、分类信息、内容库。",0],
+      ["排序切换","Sort Switcher / Sort Menu","按综合 / 价格 / 销量 / 时间等排序，升降序可切换。","当前排序在入口明示（如“价格 ↑”），切换后列表约 200ms 淡入重排并回到顶部，升降序用箭头方向区分；排序与筛选不要共用同一入口文案。","商品、酒店、文章、文件列表。",0],
+      ["标签筛选","Tag Filter / Chip Filter","一行可横滑的标签胶囊，点选即筛选。","多选时标签变填充色 + 计数，单选时点已选可取消，横滑区边缘给渐隐提示可滑；标签超过一屏不要换行挤压。","资讯分类、菜谱、技能标签、商品属性快筛。",0],
+      ["搜索联想下拉","Autocomplete Dropdown / Suggestion List","输入时实时下拉候选词 / 结果，点击直达。","防抖约 200–300ms，候选分“建议词 / 直达结果”两组，键盘上下键（Web）/ 点选可直达，联想词高亮输入部分；无联想时显示“搜索‘xxx’”兜底行。","搜索框、地址输入、@提及、命令面板。",0],
+      ["最近搜索与热门","Recent & Trending Searches","空搜索态展示历史与热搜榜。","历史按时间倒序、可单删，热搜带序号 / 热度标识但不做虚假排名，点击即搜；历史与热搜视觉分区、不要混排。","电商、视频、地图、社交搜索页。",0]
+    ]},
+    {id:"cards", no:"07", cn:"卡片与内容容器", en:"Cards & Containers", items:[
+      ["轮播图","Carousel / Image Slider","横向自动 / 手动切换的 Banner 组，配圆点或进度条。","自动播放约 3–5s、用户交互后暂停，滑动约 300ms、边缘可露下一张约 8–16pt 暗示可滑，圆点与当前图同步；Banner 超过 5 张改列表。","首页活动、商品主图、运营位。",0],
+      ["横向滑动卡片组","Horizontal Card Scroller / Card Rail","一行可横滑的等宽卡片，边缘露半张。","卡片宽约屏宽 70–85%、间距约 12–16pt，滑动带惯性与吸附，组头配“查看全部”入口；不要在横滑组内再嵌横滑内容。","推荐商品、歌单、课程、附近商家。",0],
+      ["折叠卡片","Accordion Card / Expandable Card","点击标题展开 / 收起卡片详情，高度动画。","展开约 250–300ms，箭头旋转约 180° 同步，展开后内容可滚动定位；一组内是否互斥（手风琴）要事先定好。","FAQ、订单详情、设置分组、保险条款。",0],
+      ["评分卡","Rating Card / Review Summary Card","平均分 + 星级分布条 + 评语数的聚合卡。","分布条长度按占比、点某星级可筛选对应评价，评分用半星精度而非只整数；不要把评分卡做成只能看不能点的死数据。","商品、餐厅、酒店、课程评价区。",0],
+      ["进度卡","Progress Card / Goal Card","目标、当前值、剩余与进度环 / 条的组合卡，面向目标管理场景。","进度条 + 数字双通道（条 + “7/10 天”），接近完成时文案变激励，完成后整卡变完成态而非只剩 100%。","打卡、学习计划、储蓄目标、健身。",0],
+      ["通知卡","Notification Card / Activity Card","系统 / 社交通知的卡片式聚合，含图标、文案、时间与操作。","未读用圆点或浅色底区分，左滑可标记已读 / 删除，点击直达相关页；批量通知要合并（如“3 人点赞了你”）防刷屏。","消息中心、动态提醒、系统公告。",0],
+      ["信息卡","Info Card / Stat Card","标题 + 大数字 + 同比 / 环比小字的指标卡（单卡形态）。","数字字号层级分明、涨跌用颜色 + 箭头双编码（勿只用颜色），点卡可钻取详情。","Dashboard、健康、财务概览。",0],
+      ["操作卡","Action Card / Quick Action Card","带 1–2 个按钮的引导卡（如“开通会员”“完善资料”）。","按钮文案是动词 + 对象（“去开通”而非“了解更多”），可关闭的卡要记住关闭态、不反复出现；同一屏最多 1 张强引导卡。","新手引导、营销转化、功能推广。",0]
+    ]},
+    {id:"feedback", no:"08", cn:"反馈与提示", en:"Feedback & Alerts", items:[
+      ["带操作 Toast","Action Toast","在基础 Toast 上加“撤销 / 查看”等操作按钮。","停留约 4s（有操作时比纯提示长），操作按钮与文案同行、点击后立即执行并收起；只给一个操作，不要堆两个按钮。","删除撤销、加购后“去结算”、发送后“查看”。",1],
+      ["Snackbar 撤销条","Undo Snackbar","底部出现的长条提示 + 撤销，M3 风格。","停留约 4–10s，执行先在界面上移除、实际删除延迟到条消失，超时才真正提交；与 Toast 的区别在于必带操作且位置贴底。","删除、归档、取消关注等可逆操作。",1],
+      ["警告条","Alert Banner / Inline Banner","页面顶部或内容上方常驻的彩色提示条（成功 / 警告 / 错误 / 信息）。","颜色 + 图标双编码、可关闭的要给 ×，常驻条不自动消失、与内容滚动关系要定好（吸顶或随内容走）；不要用警告条做营销。","账号异常、维护公告、表单全局错误、版本提示。",0],
+      ["横幅通知","Banner Notification / In-app Banner","从顶部滑入的系统级通知卡，可点跳转。","滑入约 250ms、停留约 4–5s 后自动收起，点卡跳转、左滑关闭，App 内时不与系统推送重复弹；重要通知才用横幅，普通消息走消息中心。","订单状态变更、新消息、活动开始。",0],
+      ["震动反馈","Haptic Feedback","用系统震动确认操作、提示边界或错误。","成功用轻震、错误用较重 / 双震、开关切换用微震，震动只作辅助、不可替代视觉提示；遵循系统规范，勿在每次点击都震。","开关、选择、删除确认、到达边界、支付成功。",0],
+      ["音效反馈","Sound Feedback / Auditory Feedback","操作成功 / 失败的短提示音。","音长约 <0.5s、音量跟随系统且可关闭，成功与失败音色明显区分；默认不强制开音效，尤其公共场景；须配“静音时不发声”逻辑。","扫码成功、支付成功、游戏、打卡。",0],
+      ["成功 / 失败全屏反馈","Full-screen Result / Success & Failure Page","支付、提交完成后的整页对勾 / 错号 + 文案 + 下一步。","图标动画约 500–800ms（如对勾描画），主按钮是下一步（查看订单 / 返回首页）而非“确定”，失败页给重试与客服两个出口；不要在全屏反馈页再弹 Toast。","支付、报名、提交表单、实名认证结果。",0],
+      ["内联成功提示","Inline Success / Confirmation Check","字段或步骤旁的小对勾 / 绿色文案确认，属于字段级即时反馈。","校验通过即时出现、不遮挡输入内容，成功态颜色弱于错误态、避免整页变绿。","用户名可用、手机号验证通过、步骤完成。",0]
+    ]},
+    {id:"gestures", no:"09", cn:"手势", en:"Gestures", items:[
+      ["长按菜单","Long-press Menu / Context Menu","长按弹出操作菜单（复制 / 转发 / 删除等）。","长按约 400–500ms 触发、伴随轻震与目标轻微放大，菜单锚定在目标附近、超出屏幕时自动翻转方向；所有长按操作都要有按钮替代入口。","消息、图片、链接、文件。",0],
+      ["双击点赞","Double-tap to Like","在图片 / 视频上双击出现大爱心放大后消失。","双击间隔约 <300ms 判定，爱心约 300–500ms 放大 + 淡出，第二次双击可取消（视产品定）；点赞数同步 +1 并有小幅弹跳。","图片社区、短视频、直播回放。",0],
+      ["捏合缩放","Pinch to Zoom","双指捏合缩放图片 / 地图 / 画布。","缩放以双指中点为中心、范围约 1×–3×（地图可更大），松手后小于 1× 回弹、超过上限钳制；缩放时双击可切换 1× / 2×。","图片查看、地图、PDF / 画布。",0],
+      ["侧滑返回（全屏滑动）","Swipe Back","从任意位置右滑返回，是边缘返回手势的全屏变体。","需与横滑内容（如轮播）做手势优先级判定；返回进度与上一页视差联动更自然。","图片查看、文章详情、沉浸式页。",0],
+      ["拖拽悬浮球","Draggable Floating Ball / Assistive Touch","可拖到屏幕任意边缘、松手吸附最近边缘的悬浮入口。","拖动跟手、松手约 200ms 吸附边缘并半透明化，点按展开菜单、闲置约 3s 后透明度降低；悬浮球不可遮挡主按钮与输入框。","客服、录屏 / 直播工具、无障碍快捷入口。",0],
+      ["边缘滑动","Edge Swipe / Edge Pan","从左右边缘滑出抽屉 / 返回，或从底部边缘上滑出控制中心式面板。","触发区约 20pt 宽、滑动进度与面板位移 1:1 跟手，松手按进度 / 速度二选一（展开或收起）；与系统手势冲突时优先系统手势。","抽屉、返回、快捷面板。",0],
+      ["重按预览","Peek & Pop（现为 Haptic Touch 长按预览）","重按 / 长按预览内容，松手关闭、上滑出快捷操作。","预览页为轻量版（非完整详情），上滑露出 2–4 个快捷操作，松手未上滑则关闭；现机型多用长按替代重按，阈值与长按菜单统一。","链接预览、消息预览、App 图标快捷操作。",0],
+      ["摇一摇","Shake / Shake to Feedback","摇动手机触发反馈、换一批、撤销等。","需明显阈值防误触，触发后先给确认（“要反馈问题吗？”）而非直接执行破坏操作；iOS 摇动撤销是系统行为，自定义摇一摇要避免冲突。","反馈入口、随机推荐、彩蛋。",0],
+      ["滑动关闭","Swipe to Dismiss / Drag Down to Close","图片 / 视频 / 弹窗向下拖动关闭，背景随拖动变暗 / 变透明。","拖动距离约超过 25% 高度或快速下甩即关闭，否则回弹，背景透明度与拖动进度联动；与滚动内容冲突时顶部下拉才触发关闭。","图片查看器、视频、底部弹窗、故事页。",0]
+    ]},
+    {id:"motion", no:"10", cn:"转场与动效", en:"Transitions & Motion", items:[
+      ["页面推入 / 推出","Push / Pop Transition","新页从右滑入、返回时向右滑出，带轻微视差。","约 300–350ms、标准 / 强调缓动，旧页轻微缩放或变暗以显层级，返回手势可中断并跟手；层级超过 3 级要考虑改用模态或 Tab。","所有层级导航。",0],
+      ["模态升起（多档停靠）","Modal Sheet with Detents","在弹窗入场基础上，支持半屏 / 全屏多档停靠。","档位如 50% / 90% 两档，拖动到档位间约 1/2 处吸附最近档，半屏时背景内容可交互或不可交互要事先定好；大内容页默认全屏档。","筛选、详情预览、评论、地图地点详情。",1],
+      ["淡入淡出","Fade / Crossfade","新旧内容透明度交叉切换，无位移。","约 150–250ms，适用于同级切换（Tab、主题、图片切换），不适用于层级导航（会丢失方向感）。","Tab 切换、主题切换、图片 / 状态切换。",0],
+      ["视差滚动","Parallax Scrolling","背景比前景滚动慢，营造纵深。","背景速度约前景的 0.3–0.7 倍，位移要钳制防露白，减动效模式下降级为普通滚动；大图头图 + 标题收缩常与之联用。","头图详情、品牌页、故事页。",0],
+      ["滚动联动导航栏","Scroll-linked App Bar（渐变 / 收缩）","滚动时导航栏由透明变实色、大标题收缩为小标题。","透明→实色的转折点约滚动 1 个导航栏高度，标题缩放约 200ms，背景模糊随滚动渐显；滚动回顶要恢复透明。","详情页、个人主页、文章页。",0],
+      ["计数动效（增减与趋势）","Count-up / Count-down & Trend","在数字滚动之外，补“增减变色 + 箭头 + 千分位”组合。","上涨变绿 / 红按产品约定（A 股习惯红涨绿跌）、箭头与颜色双编码，数字滚动约 500–800ms、千分位同步变化；不要在高频刷新时每次都全量滚动。","股价、步数、余额、积分。",0],
+      ["加载进度动画","Loading Progress Animation","品牌化的加载动效（如 Logo 描画、圆环转圈 + 百分比）。","有真实进度显示百分比、无进度用循环动画，超过约 3s 给“仍在加载，可先做别的”提示；加载动画不可替代骨架屏的布局稳定作用。","启动、首屏、导出、AI 生成等待。",0],
+      ["彩蛋动效","Easter Egg Animation","特定操作触发的隐藏动效（连续点 Logo、特定日期、输入暗号）。","触发条件隐蔽但可发现（如连点 5 次），动效短（约 1–2s）且不阻塞主流程、可随时打断；彩蛋不可承载关键功能。","品牌页、节日、周年、粉丝向产品。",0],
+      ["扫光占位动画","Shimmer","灰块骨架上的扫光动画，是骨架落位的进阶质感。","扫光约 1–1.5s 循环、方向一致，内容到达后整体淡入替换而非逐块闪烁。","Feed、详情、列表首屏加载。",0],
+      ["容器变形","Container Transform","卡片 / 按钮 morph 成详情页或面板，与共享元素转场互补，强调容器本身变形。","约 300–500ms 强调缓动，容器圆角 / 尺寸 / 颜色同步变形，返回时原路 morph 回去；变形前后内容要有对应关系。","卡片→详情、FAB→表单、搜索框→搜索页。",0]
+    ]},
+    {id:"charts", no:"11", cn:"数据与图表交互", en:"Data & Charts", items:[
+      ["图表点按查看详情","Tap-to-Inspect / Tooltip on Chart","点折线 / 柱状图的点弹出数值气泡。","触控热区放大到约 24–44pt、气泡锚定在点附近且不超出屏幕，点按空白处收起；气泡内给“数值 + 时间 + 环比”三要素。","股价、健康、财务、运动趋势图。",0],
+      ["图表切换","Chart Type Switch","折线 / 柱状 / 饼图 / 面积图一键切换。","切换约 250–300ms 形态过渡（而非生硬重绘），切换后保留同一时间范围与选中点；类型切换入口放在图表右上角。","数据看板、报表、健康统计。",0],
+      ["数据钻取","Drill-down","点总览数字 / 图表分段进入下级明细（如年 → 月 → 日）。","每级标题回显上级（如“2026 年 > 10 月”），支持逐级返回，钻取后筛选条件继承；钻取深度超过 3 级要给面包屑。","财务、销售、运营看板。",0],
+      ["对比切换","Comparison Toggle","本期 vs 上期、A vs B 两条线 / 两组柱并排对比。","对比项用颜色 + 线型 / 图案双编码，图例可点显隐，差值用“+12%”直接标在图上而非只放图例；默认只对比 2 组，超过 3 组改分面。","业绩、渠道、版本对比。",0],
+      ["时间范围选择","Time Range Selector","7 天 / 30 天 / 自定义区间切换，图表与指标同步刷新。","快捷档位 + 自定义起止日期两种入口，切换后图表约 300ms 过渡、指标同步变，自定义区间要校验起止顺序；与分段控制器联用时档位不超过 5 个。","所有趋势图、账单、报表。",0],
+      ["图表缩放与平移","Chart Zoom & Pan","双指 / 滑杆缩放时间轴、拖动平移查看历史。","缩放以触点为中心、最小粒度到日 / 小时，缩放后给“重置”入口，平移时坐标轴同步；移动端缩放不要与页面滚动冲突（图表区内缩放优先）。","K 线、长周期趋势、地图式数据。",0],
+      ["数据点标注","Annotation / Markers","在图表上标记事件（如促销、版本发布）并可点看说明。","标记用虚线 / 小旗 + 简短标签，点标记弹出事件说明卡，标记过多时按缩放级别聚合；标记不可遮挡主数据线。","运营、股价事件、产品迭代复盘。",0],
+      ["空数据图表","Empty Chart","无数据时的图表占位（虚线框 + 提示）。","保留坐标轴骨架、中间写“暂无数据，去记录第一条”并给入口，不要画一条 0 值线误导；有部分数据时缺失段用断点而非补 0。","健康、记账、学习等需用户产生数据的图表。",0]
+    ]},
+    {id:"media", no:"12", cn:"媒体", en:"Media", items:[
+      ["图片查看器","Image Viewer / Lightbox","点图全屏查看，支持左右滑切换。","打开约 250ms 由缩略图放大（与共享元素转场互补），左右滑切换约 300ms，顶部显示“3/12”与关闭；查看器内禁止页面滚动。","商品图、相册、社交图片。",0],
+      ["双击放大","Double-tap Zoom","在查看器内双击切换 1× / 2×，再双击回 1×。","放大以点击点为中心、约 200–300ms 缩放动画，放大后可单指拖动查看、边缘回弹；与捏合缩放共存且不冲突。","图片查看、地图、文档。",0],
+      ["滑动关闭查看器","Swipe-down to Close","向下拖动关闭查看器，关闭时图片跟手缩小回原位置更自然。","拖动时背景透明度同步下降、图片轻微缩小，松手阈值约 25% 高度；关闭后原列表位置不变。","图片 / 视频全屏查看。",0],
+      ["视频播放器手势","Video Player Gestures","双击左右快进 / 快退、上下滑调亮度 / 音量、左右滑调进度。","双击快进约 10s 并显示“+10s”提示，亮度 / 音量滑杆随手指实时显隐，进度拖动时显示缩略图 / 时间；手势区要与点按播放 / 暂停区分（单击暂停、双击快进）。","长视频、课程、短视频详情。",0],
+      ["音频波形与进度拖动","Audio Waveform & Scrubbing","波形条 + 可拖动的进度点，拖动时显示时间。","波形按振幅采样、已播部分变色，拖动时进度点放大、松手后约 200ms 回弹，支持 0.75× / 1× / 1.5× / 2× 倍速；音频页要支持后台播放与锁屏控制。","播客、音乐、语音消息、课程音频。",0],
+      ["直播互动点赞飘心","Floating Hearts","点赞时爱心从底部飘起、随机轨迹淡出。","每次点赞生成 1 颗、连续点赞可叠加但上限防刷屏，飘动约 1.5–2.5s、轨迹随机偏移，爱心大小随机；飘心不可遮挡主播画面核心区。","直播、连麦、秀场。",0],
+      ["弹幕","Danmaku / Bullet Comments","评论横向飘过视频上方，可开关与调透明度。","多轨道防重叠、速度按长度自适应，点弹幕可暂停 / 回复，设置里给开关 + 密度 + 不透明度；弹幕区不可遮挡字幕与关键画面。","直播、长视频、赛事。",0],
+      ["画中画","Picture-in-Picture (PiP)","视频缩小为悬浮窗、可拖动、点回全屏。","悬浮窗约 16:9、可拖到边缘吸附，点窗回原页、× 关闭并停止播放；悬浮窗内保留播放 / 暂停。","视频、直播、通话。",0],
+      ["倍速与选集","Speed & Episode Selector","倍速档位与选集列表的底部面板。","倍速档位 0.5×–2×、选中态高亮，选集按“正序 / 倒序”切换、当前集高亮并可断点续播；面板不遮挡播放进度条。","剧集、课程、播客。",0]
+    ]},
+    {id:"social", no:"13", cn:"社交与聊天", en:"Social & Chat", items:[
+      ["消息气泡","Chat Bubbles","左右区分的我方 / 对方气泡，带时间与状态。","我方右对齐主题色、对方左对齐灰底，气泡圆角在朝向侧做差异（如我方右下角小圆角），长消息自动换行、图片气泡保持原比例；气泡最大宽约屏宽 70%。","即时通讯、客服、评论区。",0],
+      ["已读回执","Read Receipts","单勾已发送、双勾已送达、变色双勾已读。","状态变化实时同步，群聊显示“3 人已读”而非逐人勾，隐私设置可关闭已读回执（关闭后自己也看不到对方的）；不要用已读回执做催促。","IM、客服、协作。",0],
+      ["输入状态","Typing Indicator","对方正在输入时的“…”跳动气泡。","对方开始输入约 500ms 后出现、停止输入约 3–5s 后消失，三个点依次跳动约 300ms 间隔；只在当前会话内显示。","IM、客服、直播连麦。",0],
+      ["表情 / 点赞反应","Message Reactions","长按消息弹出表情栏，点表情贴在消息角标。","长按约 400ms 弹出 5–7 个常用表情，点后表情以小角标贴在气泡角、点角标看“谁点了什么”，同一人点同一表情可取消；重点在反应数据的呈现。","IM、群聊、评论、动态。",0],
+      ["语音消息波形","Voice Message Waveform","语音条按时长显示波形、点播时波形逐段变色。","波形长度与语音时长成正比（上限钳制），播放时波形按进度变色、支持倍速与转文字，未听语音用圆点标记；长语音（>60s）给进度拖动。","IM、语音动态、客服语音。",0],
+      ["置顶 / 免打扰","Pin & Mute","会话置顶到顶部、免打扰后消息不震不响但保留角标。","置顶会话带“置顶”标识且始终在顶部（多置顶按置顶时间排），免打扰用斜杠铃铛图标、消息仍计入未读但不推送；左滑菜单是常用入口。","IM、群聊、频道。",0],
+      ["引用回复","Quote Reply","回复时引用原消息片段再写新消息。","引用块显示原发送者 + 摘要（约 2 行截断），点引用块跳到原消息位置，新消息与引用块视觉嵌套；引用图片时用缩略图而非原图。","群聊、客服、评论区。",0],
+      ["@提及与提醒","Mentions","输入 @ 弹出成员列表，@ 后对方收到特别提醒。","@ 列表按最近互动排序、支持拼音搜索，被 @ 者消息高亮且即使免打扰也可提醒（视设置）；@all 需权限。","群聊、协作、评论。",0],
+      ["消息撤回与编辑","Recall & Edit","发送后限时内可撤回 / 编辑，撤回留“已撤回”占位。","发送后约 2 分钟内可撤回，撤回后原位置留灰色占位文案（不留原内容），编辑后标“已编辑”并可看历史；超过时限禁用撤回并提示。","IM、协作、客服。",0]
+    ]},
+    {id:"commerce", no:"14", cn:"电商与交易", en:"E-commerce & Transactions", items:[
+      ["购物车飞入动画","Fly to Cart","点“加购”后商品图 / 小球沿抛物线飞入购物车图标，图标抖动 + 角标 +1。","飞行约 600–800ms、抛物线缓动，到达时购物车图标约 150ms 缩放弹跳、角标数字滚动（与数字滚动联用）；飞行元素用缩略图而非整卡。","电商、外卖、生鲜、票务。",0],
+      ["优惠券领取","Coupon Claim","券卡点“领取”变“已领取”，券面打孔 / 撕边样式。","领取约 300ms 状态翻转（按钮变灰 + 文案变“已领取”），领完可点“去使用”直达可用商品，过期 / 领完态明确区分；不要用弹窗打断领取。","电商、本地生活、会员。",0],
+      ["订单进度时间轴","Order Tracking Timeline","下单 → 付款 → 发货 → 运输 → 签收的竖向时间轴。","已完成节点实心 + 连线变色、当前节点脉冲 / 高亮、每节点带时间，未到节点灰色；异常（退货 / 延迟）用红色分支而非覆盖主线。","电商、外卖、物流、服务订单。",0],
+      ["支付成功动效","Payment Success Animation","支付后对勾描画 + 金额 + 订单号 + 下一步。","对勾描画约 500–800ms、金额数字滚动到位，成功页主按钮是“查看订单 / 返回首页”，失败页给“换种方式支付”；支付成功不可用 Toast 一带而过。","支付、充值、订阅。",0],
+      ["规格选择器","SKU Selector / Variant Picker","颜色 / 尺寸 / 套餐的多维选择，缺货组合置灰。","选一维后其他维的缺货组合实时置灰，已选组合回显价格与库存，确认前价格随选择实时变；图片随颜色切换。","电商商品、票务选座、定制商品。",0],
+      ["加购反馈（非步进器）","Add-to-cart Feedback","在按钮变步进器之外，补“按钮文案变‘已加入’+ 购物车抖动 + 底部迷你条”。","按钮约 1.5s 内显示“已加入”后恢复，购物车图标同步弹跳，底部出现“已加入购物车，去结算 >”迷你条约 3s；三者只选其二、不要全上。","加购高频的电商 / 外卖。",1],
+      ["价格区间与凑单","Progress to Free Shipping","距包邮 / 满减还差多少的进度条 + 凑单入口。","进度条 + “再买 ¥12 免邮”文案双通道，点进度条直达凑单商品，达标后变“已享免邮”并给庆祝微动效；金额随购物车实时变。","电商、外卖满减。",0],
+      ["地址选择与默认地址","Address Picker & Default","收货地址列表 + 新增 / 编辑 + 默认地址标识。","默认地址置顶并标“默认”，列表行点选即切换、下单页回显完整地址，新增地址用级联选择器；地址超长时截断 + 展开。","电商、外卖、到家服务。",0],
+      ["订单取消 / 退款流程","Cancel & Refund Flow","取消原因选择 + 退款进度 + 到账提示。","原因单选 + 可选补充，提交后给“退款处理中”时间轴、到账后推送 + 订单态变“已退款”，取消不可逆操作要二次确认；退款金额与原支付方式回显。","电商、票务、订阅。",0]
+    ]},
+    {id:"profile", no:"15", cn:"个人与设置", en:"Profile & Settings", items:[
+      ["个人主页","Profile Page","头像、昵称、简介、数据（关注 / 粉丝 / 获赞）与内容 Tab 的组合页。","头部随滚动收缩，数据区点数字可跳对应列表，内容 Tab 用分段 / 标签页切换；他人主页与自己主页的操作区不同（关注 vs 编辑资料）。","社交、创作、会员中心。",0],
+      ["头像更换","Avatar Change","点头像 → 拍照 / 相册 / 默认头像 → 裁剪 → 上传。","裁剪框 1:1 圆形预览、上传时头像变加载态、失败回滚旧头像，支持默认头像库；上传后全 App 头像同步刷新。","所有带账号的 App。",0],
+      ["主题切换（深色模式过渡）","Theme Switch / Dark Mode Transition","浅色 ↔ 深色切换时颜色平滑过渡而非闪变。","切换约 300–500ms 颜色插值过渡，跟随系统 / 手动 / 定时三种模式，图片与插画要备深色版或降亮度处理；切换后记住用户选择、优先于系统。","阅读、社交、工具类全 App。",0],
+      ["字体大小调节","Font Size Adjustment","设置里滑杆调字号，全 App 动态字号跟随。","档位如小 / 标准 / 大 / 特大，调节后布局自适应（不截断、不溢出），跟随系统动态字号（iOS Dynamic Type）是更优做法；调节时给实时预览句。","阅读、老年用户、长文本 App。",0],
+      ["语言切换","Language Switch","切换 App 语言，界面即时重排。","切换后无需重启、布局按语言长度自适应（德语 / 俄语更长），日期 / 货币 / 数字格式跟随语言地区，切换入口在设置顶部而非深埋；未翻译文案回退英文而非空白。","出海、多语言 App。",0],
+      ["账号切换","Account Switcher","多账号快速切换，无需重新登录。","账号列表带头像 + 昵称、当前账号打勾，切换约 300ms 过渡并刷新首页数据，退出账号需二次确认；切换后角标与消息按新账号重算。","社交、电商卖家、协作工具。",0],
+      ["隐私与权限管理","Privacy Settings","可见范围、黑名单、数据授权的集中管理。","按“谁能看我 / 谁能找我 / 数据授权”分组，每项开关即时生效并给反馈，敏感操作（如注销）单独分区 + 二次确认；注销入口不可隐藏。","社交、金融、健康类。",0],
+      ["通知设置","Notification Preferences","按类型（订单 / 互动 / 营销）分开关通知。","总开关 + 分类型开关两级，营销类默认关闭或弱提醒，关闭后仍可在消息中心查看；设置变更即时同步到推送系统。","所有带推送的 App。",0]
+    ]},
+    {id:"system", no:"16", cn:"系统与规范", en:"System & Design Tokens", items:[
+      ["设计令牌：颜色","Color Tokens","语义化颜色（primary / surface / error）而非硬编码色值。","令牌分基础色 → 语义色 → 组件色三层，深浅色各一套，品牌色只用于主操作与强调；换肤只需换令牌层。","设计系统、多品牌、多主题。",0],
+      ["设计令牌：圆角","Corner Radius Tokens","M3 档位 0 / 4 / 8 / 12 / 16 / 28dp 与全圆。","小组件（芯片 / 按钮）用小圆角、卡片用中圆角、弹窗 / 抽屉顶部用大圆角，同一层级圆角一致；圆角越大越显柔和、越小越显专业。","全 App 组件库。",0],
+      ["设计令牌：阴影 / 海拔","Elevation Tokens","用层级（0–5 级）表达前后关系而非随意阴影。","M3 层级配表面 tint + 阴影，层级越高越亮 / 阴影越大，同一屏层级不超过 3 档；深色模式下阴影弱化、改用描边 / 亮度区分。","卡片、弹窗、抽屉、FAB。",0],
+      ["设计令牌：间距","Spacing Tokens","4dp / 8pt 网格的间距阶梯（4 / 8 / 12 / 16 / 24 / 32）。","内边距与外边距都取阶梯值、不用 13 / 17 等随意值，移动端页边距约 16pt、组间距约 24pt；间距一致是“整齐感”的最大来源。","全 App 布局。",0],
+      ["无障碍大字","Dynamic Type / Large Text","跟随系统字号放大，布局不断裂。","用相对字号而非固定 pt，放大后行高与间距同步放大，按钮与卡片高度自适应；特大字号下要测试长标题换行与截断。","全 App，尤其阅读与老年用户。",0],
+      ["对比度","Contrast","正文 4.5:1、大字 3:1、图标与描边不低于 3:1。","弱灰文案（如 #999 on 白底）常不达标，禁用态可放宽但须配图标 / 文字说明；深色模式下浅色文字同样要测对比度。","全 App 文案与图标。",0],
+      ["旁白 / 读屏","VoiceOver / TalkBack","读屏按逻辑顺序读出元素含义与状态。","所有图标按钮给无障碍标签、装饰图标记为忽略，自定义手势配替代按钮，焦点顺序与视觉顺序一致；读屏下手势操作要有等效操作。","全 App，尤其手势密集页。",0],
+      ["刘海屏 / 安全区","Safe Area & Notch","内容避让刘海、灵动岛、底部 Home 条。","用系统安全区 inset 而非固定数值，底部按钮距安全区底约 16pt、顶部导航贴安全区顶，横屏时左右也要避让；全屏图片可延伸到安全区、但文字与按钮不可。","全屏页、视频、游戏、底部操作区。",0],
+      ["平板横竖屏","Adaptive Layout / Size Classes","手机竖屏 → 平板横屏时布局从单列变双列 / 侧边栏。","用尺寸类别而非固定宽度断点，平板横屏时导航变侧边栏、列表 + 详情变左右分栏，竖屏回单列；同一功能在两端入口一致。","平板、折叠屏、桌面 Web。",0],
+      ["多端一致性","Cross-platform Consistency","同一功能在 iOS / Android / 小程序 / Web 的入口、文案、状态一致，交互可按平台习惯微调。","共享令牌与文案库，平台差异只留在导航 / 手势 / 系统组件层（如 iOS 左滑返回 vs Android 预测性返回）；不要为“一致”牺牲平台原生体验。","多端产品、设计系统。",0]
+    ]},
+    {id:"extras", no:"17", cn:"跨类补充", en:"Cross-cutting Extras", items:[
+      ["步骤指示器","Step Indicator","多步流程顶部的圆点 / 数字 + 连线，当前步高亮、完成步打勾。","步骤 ≤5 步、当前步文案明示，点已完成步可回跳。","下单、开户、发布流程。",0],
+      ["倒计时","Countdown","验证码、秒杀、支付剩余时间的倒计时。","秒杀用“时：分：秒”三段、验证码用 60s 倒数，结束时自动刷新状态而非停在 00:00。","营销、验证、订单超时。",0],
+      ["扫码","Scan / QR Scanner","取景框 + 扫描线 + 手电 / 相册入口。","取景框约屏宽 70%、扫描线约 1–2s 上下来回，识别成功给震动 + 自动跳转；弱光给手电开关。","支付、加好友、物流、门票。",0],
+      ["分享面板","Share Sheet","系统分享或自定义分享渠道面板。","优先用系统分享面板（自带最近联系人），自定义面板渠道 ≤8 个、含“复制链接”，分享后给成功反馈。","内容、商品、活动分享。",0],
+      ["新手引导动图","Guided Animation","用 3–5s 循环动图演示手势而非文字说明。","动图只演示一个手势、循环播放、可跳过。","新手势、复杂交互首次出现时。",0]
+    ]},
+    {id:"core12", no:"18", cn:"12 种高级交互（全文）", en:"12 Advanced Interactions", items:[
+      ["点击反馈","Press Feedback","按钮或卡片被按下时有明确的“按下去”实感，而不是静态变色。","按下时整体缩小到 0.95 倍、阴影减弱，松开后用弹性缓动回弹到原尺寸，全程约 150–200ms。","按钮、卡片等一切可点击元素。",0],
+      ["弹性开关","Elastic Toggle Switch","开关切换时滑块带弹性地滑到目标位置。","滑块先拉长再回弹到目标位置，带 overshoot 回弹曲线，背景色同步过渡，状态变化一目了然。","设置项、功能开关。",0],
+      ["水波按钮","Ripple Button","点击按钮时从触点扩散一圈水波纹。","以触点为圆心扩散一圈半透明水波，波纹扩到按钮边缘后淡出。","所有主要操作按钮。",0],
+      ["点击爆散","Particle Burst on Tap","点击点赞 / 收藏时，从触点向外爆散小粒子。","爆散 8–12 个小粒子（爱心、星星或圆点），粒子带重力感下落并淡出，同时按钮本身弹一下。","点赞、收藏等轻量正反馈操作。",0],
+      ["状态出现","Staged Success State","操作完成后的成功状态分步出现，不直接跳出来。","先画圈、再打勾、文字随后淡入，三个元素按约 100ms 间隔依次出现。","支付成功、提交完成等结果反馈。",0],
+      ["液态滑块","Liquid Slider","拖动时滑块圆钮像液体一样按拖动速度拉长变形。","圆钮按拖动速度拉长（拖得越快拉得越长），松手后回弹成正圆，滑过的轨道用液体感填充。","音量、进度、数值调节滑块。",0],
+      ["数字滚动","Rolling Number / Odometer","数字变化时每一位滚动到新数字，像老式翻牌 / 里程表。","每一位上下滚动到新数字，变化幅度大时滚得更快。","金额、积分、步数等数字展示。",0],
+      ["骨架落位","Skeleton Screen","数据加载时先用灰色骨架块占位，数据回来后内容逐块落位。","骨架块闪烁占位，真实内容从骨架位置逐块淡入落位，不出现整屏闪跳。","列表、详情等数据加载首屏。",0],
+      ["卡片翻面","3D Card Flip","点击卡片沿 Y 轴 3D 翻转，正反两面分别是概览和详情。","翻转 180 度，过程约 400–600ms，带透视感。","卡片概览 / 详情切换、单词卡、名片。",0],
+      ["汉堡变叉","Hamburger to Close Morph","汉堡图标平滑变形为叉号，同时菜单面板滑出。","上下两线旋转 45 度、中间线淡出，再点一次变回去。","移动端菜单、抽屉入口。",0],
+      ["卡片抽走","Swipe-away Card","卡片可拖动抽走，下一张从下方顶上来。","拖过阈值后卡片带旋转飞出屏幕，下一张顶上来；同时提供按钮一键抽走。","卡片流、分拣、推荐内容浏览。",0],
+      ["底部抽屉","Bottom Sheet / Bottom Drawer","抽屉从屏幕底部滑出，背景压暗。","背景可点击关闭；抽屉顶部有横条，支持抓横条下拉关闭，下拉过半自动收起。","筛选、详情、操作面板。",0]
+    ]}
+    ];
+
+    var BASE = [
+      ["基础动效","点击反馈类", ["点击反馈","弹性开关","水波按钮","点击爆散","状态出现","数字滚动","骨架落位","卡片翻面","汉堡变叉"]],
+      ["滑块与选择","滑动 / 勾选类", ["液态滑块","刻度滑动吸附","惯性滚轮","分步兴趣选择","勾选联动"]],
+      ["卡片与容器","卡片形态类", ["卡片抽走","叠卡展开","吸附卡加画线","照片收拢","扇形相册切换","数据面板联动"]],
+      ["转场与弹窗","弹层类", ["共享元素转场","圆形扩散转场","底部抽屉","进度展开","弹窗入场动效","弹窗拖拽 / 边缘吸附 / 多层叠加","提示动效（Toast / 角标 / 气泡 / 引导）"]],
+      ["控件形态变化","变形控件类", ["搜索框展开","加号变面板","按钮变步进器","列表切换","完成反馈按钮","滑动分拣","标题逐行切换"]],
+      ["版式与风格","布局 / 风格类", ["Dashboard 菜单 / 布局 / 侧边栏","App 布局","错位 / 留白 / 非对称布局","网页版式（编辑分栏 / 叠影显影 / 竖切分栏 / 暗底流光 / 纵深长廊）","移动端大字留白 / 沉浸氛围","风格（窄体海报风 / 素白画廊风 / 纸感衬线风 / 3D 沉浸 / 滚动大片 / 杂志排版）","设计语言 5 层（版面 / 字体 / 颜色 / 动效 / 留白）"]]
+    ];
+
+    function esc(s){ return s.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;"); }
+
+    /* ===== 视觉设计风格（36 条，2026-10-25 公开资料检索） ===== */
+ var STYLE_CATS = [
+ {id:"type", no:"19", cn:"字体与排版", en:"Typography · Visual Styles", items:[
+   {n:"中文无衬线", t:"Chinese Sans-serif · Noto Sans SC / 思源黑体", d:"中性、现代、屏幕可读性最稳的中文正文字体，七档字重覆盖标题到正文。", demo:"永 A 0123 思源黑体", demoCls:"sans",
+    pts:["推荐 Noto Sans SC / 思源黑体；正文 14–16px、行高约 1.6–1.75；标题可用 500 / 700 字重","字体栈示例：'Noto Sans SC', 'PingFang SC', 'Microsoft YaHei', sans-serif（系统字体仅作回退，不代表其可商用分发）","许可：Noto 全部字体为 SIL Open Font License；思源黑体（Source Han Sans / Noto Sans CJK）自 v1.002 起为 SIL OFL 1.1。正式上线、嵌入 App 前仍须再核对许可原文"],
+    scene:"通用 App、后台、电商、资讯正文。",
+    src:[["Noto Fonts 许可与使用说明","https://notofonts.github.io/noto-docs/website/use/"],["Source Han Sans · Wikipedia","https://en.wikipedia.org/wiki/Source_Han_Sans"]]},
+   {n:"中文衬线与楷体", t:"Chinese Serif / Kai · Noto Serif SC / LXGW WenKai", d:"衬线显正式与书卷气，文楷带手写温度，适合标题、阅读与文化类页面。", demo:"永 A 0123 思源宋体", demoCls:"serif",
+    pts:["标题 / 大标题用 Noto Serif SC / 思源宋体 20–32px、字重约 600–700","长文阅读可用霞鹜文楷（LXGW WenKai）16–18px、行高约 1.8","衬线 / 楷体在小字号（<14px）下笔画易糊，正文小字仍回无衬线","许可：Noto Serif 同为 SIL OFL；LXGW 文楷为 SIL OFL 1.1，含「霞鹜 / LXGW」等保留字名条款，改字再分发须注意，上线前读 OFL.txt 原文"],
+    scene:"阅读、出版、文化、品牌大标题；文楷适合教育、文创、生活方式类标题。",
+    src:[["LXGW WenKai OFL 许可原文","https://raw.githubusercontent.com/lxgw/LxgwWenkaiGB/main/OFL.txt"],["LXGW 字体说明（CTAN 镜像 PDF）","https://ftp2.uib.no/ibiblio/CTAN/fonts/lxgw-fonts/lxgw.pdf"]]},
+   {n:"拉丁 UI 字体", t:"Latin UI Fonts · Inter / Roboto Flex", d:"高 x-height、中性无衬线，是数字、拉丁字母与界面英文的首选，与中文黑体气质最合。",
+    pts:["Inter：OFL-1.1，字重 100–900 可变字体，支持等宽数字（tnum）；UI 英文 / 数字 12–16px","Roboto Flex 同为 OFL 许可","一个页面最多 2 个字体家族（标题 + 正文），避免加载过多字重，约 400 / 500 / 700 三档即可"],
+    scene:"SaaS、数据产品、国际化产品、含大量拉丁字母与数字的界面。",
+    src:[["Inter 等 UI 字体对比","https://fontalternatives.com/blog/geist-vs-inter-vs-satoshi-product-ui/"],["可变字体与 Google Fonts 列表","https://variablefonts.dev/posts/google-font-list-1"]]},
+   {n:"中西文配对", t:"Chinese–Latin Font Pairing", d:"中文定基调，拉丁字体只负责字母数字与英文标题；两者 x-height 与灰度接近才不「跳」。",
+    pts:["① 思源黑体 + Inter（通用产品）；② 思源黑体 + Roboto（Android 气质）","③ 思源宋体 + Noto Serif / Playfair 风格衬线（编辑 / 品牌大标题，拉丁衬线仅用于标题）","④ 霞鹜文楷标题 + 柔和无衬线正文（文创标题 + 黑体正文，正文不用文楷）","CSS 顺序：拉丁字体在前、中文在后，如 font-family: 'Inter', 'Noto Sans SC', sans-serif"],
+    scene:"所有中英混排产品；标题衬线 + 正文黑体是最稳的「编辑感」组合。",
+    src:[["字体配对参考工具","https://raiktools.com/design/font-pairings-generator/"]]},
+   {n:"字阶", t:"Type Scale", d:"一套固定字号 + 行高档位，全站只用这些档，不临时发明字号。",
+    pts:["推荐通用档：12 / 14 / 16 / 20 / 24 / 32px；对应行高约 16 / 20 / 24 / 28 / 32 / 40px","正文行高比约 1.5–1.7，标题约 1.2–1.3","对照公开系统：Material 3 为 Display 57/45/36、Headline 32/28/24、Title 22/16/14、Body 16/14/12、Label 14/12/11","Ant Design 基准 14px、行高 1.5714，h1 38 / h2 30 / h3 24 / h4 20 / h5 16；Apple 动态字号为大标题 34pt、正文 17pt、脚注 13pt、说明 12/11pt（pt 与 px 不等同，移动端按平台规范换算）"],
+    scene:"全站排版基线；先定字阶再画页面。",
+    src:[["Material 3 排版档位","https://astordev.github.io/articles/material-typography/"],["Ant Design Typography","https://ant.design/components/typography/"],["iOS 字号指南","https://www.learnui.design/blog/ios-font-size-guidelines.html"]]},
+   {n:"字重分工、等宽数字与层级", t:"Font Weight, Tabular Figures & Hierarchy", d:"层级主要靠字号 + 字重 + 颜色三档拉开，而不是靠五六种颜色；数字列必须等宽，否则金额、时间会左右跳动。",
+    pts:["字重分工：正文 Regular 400、次要标题 / 按钮 Medium 500、章节标题 Semibold 600、主标题 / 关键数字 Bold 700（Ant Design 标题强字重即 600）","层级规则：页面标题 > 章节标题 > 正文 > 辅助 / 说明；辅助文字用 12–13px + 灰色，而非更小字号","数据屏数字用 font-variant-numeric: tabular-nums（Inter 等字体支持 tnum），金额、倒计时、表格数字列统一开启","中文标题避免用 300 以下细体（小字号笔画易断）"],
+    scene:"数据密集页、价格 / 账单 / 表格、仪表盘、表单标签层级。",
+    src:[["Ant Design Typography","https://ant.design/components/typography/"],["Inter 等宽数字说明","https://fontalternatives.com/blog/geist-vs-inter-vs-satoshi-product-ui/"]]}
+ ]},
+ {id:"layoutstyles", no:"20", cn:"版式风格", en:"Layout Styles · Visual Styles", items:[
+   {n:"极简主义", t:"Minimalism", d:"一个字体、一个强调色、留白即层级，删到不能再删。", sw:["#FFFFFF","#F7F7F5","#111111"],
+    pts:["约：背景 #FFFFFF / #F7F7F5，正文 #111111，强调色只 1 个","圆角 8–12px，卡片用 1px 浅边框或极淡阴影（约 0 2px 8px rgba(0,0,0,0.06)），段间距 24–32px，行高 1.6+"],
+    scene:"效率工具、文档、品牌官网、阅读类。", src:[["Superdesign 风格库","https://superdesign.dev/styles"]]},
+   {n:"杂志编辑式", t:"Editorial / Magazine", d:"大标题 + 大图 + 多栏网格，像杂志跨页一样先定视觉焦点再排文字。",
+    pts:["约：12 栏网格（文章 3 栏、长文 2 栏），标题 32–56px 衬线或粗黑体，正文 16–18px、行高约 1.7，图注 12–13px 灰色","每屏只 1 个主视觉焦点，留白约占 30%+；图片比例常用 3:4（人物 / 时尚）或 16:9（横图）"],
+    scene:"内容、媒体、品牌故事、长文详情页。",
+    src:[["杂志版式设计","https://uicreative.net/blog/best-magazine-layout-design.html"],["杂志跨页设计指南","https://publuu.com/knowledge-base/designing-impactful-magazine-spreads-tips-and-trends/"]]},
+   {n:"瑞士国际主义网格", t:"Swiss / International Typographic Style", d:"严格网格 + 无衬线 + 客观排版，结构本身就是装饰。",
+    pts:["约：12 栏网格、间距 16–24px，左对齐，标题用粗无衬线 28–48px 且多为黑色","配色限 2–3 色 + 黑白，圆角 0–4px，元素全部贴网格线，刻意留空栏"],
+    scene:"作品集、文化机构、数据报告封面、工具官网。",
+    src:[["Müller-Brockmann 与瑞士风格","https://www.sessions.edu/notes-on-design/graphic-giants-josef-muller-brockman/"]]},
+   {n:"卡片流", t:"Card-based Layout", d:"内容装进等高卡片，网格流动排列，扫读成本最低的通用版式。",
+    pts:["约：卡片圆角 12–16px，内边距 16px，卡间距 12–16px，图片 16:9 或 4:3","标题 16px/600、正文 14px、辅助 12px；桌面 3–4 列、移动 1–2 列","卡片用边框（#E5E7EB）或淡阴影二选一，不要两者叠加"],
+    scene:"发现页、商品 / 内容列表、仪表盘次级模块。",
+    src:[["Superdesign 风格库","https://superdesign.dev/styles"],["Ant Design 字号基线","https://ant.design/components/typography/"]]},
+   {n:"粗野主义 / 新丑风", t:"Brutalism / Neo-Brutalism", d:"结构外露、毫不修饰：粗黑边、硬阴影、高饱和撞色，故意「不好看」以显真实。", sw:["#FFDC58","#FF6B6B","#7FBC8C","#000000"],
+    pts:["边框 2–4px 纯黑，硬阴影 5px 5px 0 0 #000（零模糊），圆角 0","按钮 / 标题用 Bold / Black 字重，高饱和纯色块（如 #FFDC58、#FF6B6B、#7FBC8C，约值），无渐变","注意：大字对比度仍须 ≥3:1、正文 ≥4.5:1"],
+    scene:"创作者工具、潮牌、活动页、作品集；不适合金融、医疗等需信任感的正文页。",
+    src:[["Neo-Brutalism 风格库","https://neubrutalism.com/"],["复古粗野风格综述（2026）","https://www.setproduct.com/blog/retro-brutalist-ui-design-2026"]]},
+   {n:"玻璃拟态", t:"Glassmorphism", d:"毛玻璃面板浮在彩色背景上：半透明 + 背景模糊 + 细亮边。",
+    pts:["约：面板 background: rgba(255,255,255,0.25)（深色底用 0.15–0.2），backdrop-filter: blur(16–24px)","1px 亮边 rgba(255,255,255,0.4)，圆角 16–24px，阴影淡（约 0 8px 32px rgba(0,0,0,0.12)）","面板下必须有彩色渐变 / 图片底，否则「玻璃感」消失；面板内文字须用深色或加深色罩以保对比度"],
+    scene:"仪表盘浮层、音乐 / 天气卡片、Hero 区、导航浮层；慎用于长正文。",
+    src:[["Superdesign 风格库","https://superdesign.dev/styles"],["现代 Web 设计风格指南","https://dev.to/homayounmmdy/modern-web-design-styles-every-frontend-developer-must-know-2025-guide-1ijl"]]},
+   {n:"暗黑模式", t:"Dark Mode", d:"不是反色，而是重新设计的层级：越往上浮的表面越亮，强调色降饱和。", sw:["#1C1B1F","#D0BCFF","#E6E1E5"],
+    pts:["参考 Material 3 深色：背景 / 表面 #1C1B1F，主色 #D0BCFF，表面文字 #E6E1E5","容器层级约 #211F26（低）→ #2B2930 → #36343B（高）","正文避免纯白 #FFFFFF，约用 #E6E1E5 / #E0E0E0；彩色在深底上降饱和约 20%，阴影改「提亮表面」表达层级"],
+    scene:"开发者工具、数据产品、夜间高频 App、媒体播放器。",
+    src:[["Material 3 深色配色","https://ggprompts.com/styles/dark-mode-material.html"]]},
+   {n:"新拟态", t:"Neumorphism / Soft UI", d:"元素像从同色背景里「挤」出来：双阴影（亮 + 暗）塑造柔和浮雕。", sw:["#E0E5EC","#B8BCC4","#FFFFFF"],
+    pts:["约：背景与元素同色（如 #E0E5EC），圆角 16–24px，双阴影如 8px 8px 16px #B8BCC4, -8px -8px 16px #FFFFFF","只用于卡片 / 开关 / 按钮等容器，文字本身不用浮雕","⚠️ 易低于 WCAG 对比度，按钮文字与边框须另做深色 / 描边，慎用于表单主流程"],
+    scene:"智能家居面板、音乐播放器、设置类小组件；不适合数据密集与无障碍要求高的页面。",
+    src:[["Superdesign 风格库","https://superdesign.dev/styles"],["新拟态 / 玻璃 / 粗野对比","https://www.cccreative.design/blogs/differences-in-ui-design-trends-neumorphism-glassmorphism-and-neubrutalism"]]},
+   {n:"Y2K", t:"Y2K Revival", d:"千禧年乐观主义：铬金属字、气泡 3D、虹彩渐变、星星闪光。",
+    pts:["约：标题用粗圆体 / 气泡感字体 28–48px，铬渐变文字（银 → 粉 → 蓝）","背景用霓虹到粉彩的柔和渐变 blob，圆角 20px+ 甚至全圆，装饰星形 / 闪光小图形","正文仍回 14–16px 黑体，避免全页都用装饰字体"],
+    scene:"潮流电商、音乐、社交活动、Z 世代品牌营销页。",
+    src:[["复古风格综述（2026）","https://www.setproduct.com/blog/retro-brutalist-ui-design-2026"],["Y2K 美学兴起","https://studio2am.co/blogs/news/the-rise-of-y2k-aesthetic-in-graphic-design"]]},
+   {n:"像素风", t:"Pixel Art", d:"8/16-bit 游戏语言：方块像素、硬边缘、有限调色、等宽像素字体。",
+    pts:["约：圆角 0，边框 2–4px 硬色，像素字体仅用于标题 / 数字（正文仍用常规黑体 14–16px 以保可读）","调色限 4–8 色，图标用 16×16 / 32×32 像素网格绘制，阴影为硬块偏移而非模糊"],
+    scene:"游戏、复古活动、开发者 / 极客品牌、儿童教育装饰区。",
+    src:[["复古风格综述（2026）","https://www.setproduct.com/blog/retro-brutalist-ui-design-2026"],["Superdesign 风格库","https://superdesign.dev/styles"]]},
+   {n:"日系小清新", t:"Japanese Minimal / Kanso", d:"「间（Ma）」即留白本身：素、暖、克制，留白比元素更重要。", sw:["#FAF7F2","#F5F1EA","#333333"],
+    pts:["约：米白 #FAF7F2 / #F5F1EA 底，墨色 #333333 正文，点缀低饱和蓝绿或陶土色","字号 14–16px、行高约 1.8–2.0，段间距 24–32px，圆角 8–12px，细线边框 #E8E2D9","图片留大面积留白、不铺满"],
+    scene:"生活方式、文具、食品、阅读、家居类。",
+    src:[["日本极简主义论述","https://contempaesthetics.org/2020/09/24/on-japanese-minimalism/"]]},
+   {n:"中式留白", t:"Chinese Whitespace / Song-style Elegance", d:"宋画式疏朗：竖排 / 书法标题点睛，大面积宣纸白，墨色分五色层次。", sw:["#F7F3EB","#1A1A1A","#6B6560","#C8452C"],
+    pts:["约：宣纸底 #F7F3EB / #FAF8F3，墨 #1A1A1A、淡墨 #6B6560，朱砂点缀 #C8452C（仅小面积印章 / 强调）","标题可用衬线 / 宋体 28–40px，竖排仅用于装饰标题；正文 15–16px、行高约 1.9","线框极细（1px #DDD6C8），圆角 4–8px","注：本条具体色值与竖排用法为落地建议（约值），未找到单一权威来源背书，不宜作为引用出处"],
+    scene:"文化、茶、文博、书法、东方美学品牌。",
+    src:[["留白与东方美学原则（同源论述）","https://contempaesthetics.org/2020/09/24/on-japanese-minimalism/"]]},
+   {n:"孟菲斯", t:"Memphis", d:"80 年代后现代：撞色、几何碎片、波点条纹，拒绝一切「高级灰克制」。",
+    pts:["约：粗黑边 4px、硬阴影 6px 6px 0 #000，圆角以直角 / 小圆角为主","撞色组合如黄 + 粉 + 紫 + 绿，装饰圆 / 三角 / 波点 / 波浪线不对称散布；标题用粗黑体 28–40px","正文区须留一块干净底色放 14–16px 文字，否则会读不下去"],
+    scene:"青年品牌、活动海报页、创意 agency、潮流包装式页面。",
+    src:[["Memphis 风格展示","https://www.stylekit.top/styles/memphis/showcase"],["Memphis 设计风格史","https://pixelbuddha.net/journal/articles/strike-from-the-1980s-memphis-design-style"]]},
+   {n:"赛博朋克 / 酸性设计", t:"Cyberpunk / Acid Design", d:"霓虹夜城 + 高饱和酸色 + 故障 / 扫描线质感，视觉冲击优先。", sw:["#0A0A12","#00F0FF","#FF2E88","#D9FF00"],
+    pts:["约：深底 #0A0A12 / #050510，霓虹青 #00F0FF、品红 #FF2E88、电光黄 #D9FF00（仅强调与描边）","标题 28–48px 粗黑 / 等宽混排，细描边 + 外发光（约 0 0 16px 霓虹色 30% 透明度），可加扫描线 / 噪点纹理","正文须用 #E8E8E8 以上浅灰、行高 1.6，霓虹色不直接做正文色"],
+    scene:"游戏、电竞、音乐节、潮流科技营销页；不适合长阅读与政务 / 金融。",
+    src:[["Superdesign 风格库","https://superdesign.dev/styles"],["现代 Web 设计风格指南","https://dev.to/homayounmmdy/modern-web-design-styles-every-frontend-developer-must-know-2025-guide-1ijl"]]},
+   {n:"数据仪表盘风", t:"Data Dashboard Style", d:"密度高、对比克制、颜色只表达数据含义：KPI 在上、趋势在中、明细在下。",
+    pts:["约：12 栏网格、卡间距 12–16px、卡内边距 16px","KPI 数字 28–36px Bold + 等宽数字，标签 12px 灰色，图表只用 3–4 个数据色 + 语义色（涨绿 / 跌红须兼顾色盲，加箭头 / ±号）","深色版见「暗黑模式」与配色 E1，浅色版底 #F3F4F6、卡 #FFFFFF"],
+    scene:"BI、运营后台、数据大屏、监控页（大屏字号整体放大约 1.5 倍，见页面类型 C3）。",
+    src:[["仪表盘设计最佳实践","https://www.fusioncharts.com/blog/dashboard-design-best-practices"]]}
+ ]},
+ {id:"archetypes", no:"21", cn:"页面类型设计", en:"Page Archetypes · Visual Styles", items:[
+   {n:"首页 / 发现 + 列表页", t:"Home / Discover & List", d:"首屏给 1 个主推 + 一组可扫读的卡片流，列表行只保留「标题 + 关键信息 + 状态」。",
+    pts:["约：首屏 Hero 标题 28–32px、副文案 14–16px、主按钮 1 个","列表行高约 64–72px（单行）/ 88px（含副标题），标题 16px/500、副信息 13–14px 灰色、右侧放价格 / 状态 / 箭头","卡片流见「卡片流」版式；筛选 / 排序条置顶吸顶，空隙 12–16px"],
+    scene:"电商首页、内容发现、商品 / 文章列表。",
+    src:[["Ant Design 字号基线","https://ant.design/components/typography/"]]},
+   {n:"详情页", t:"Detail Page", d:"一屏只讲一件事：主视觉 → 标题 → 关键信息 → 正文 / 规格 → 底部行动区。",
+    pts:["约：主图 16:9 或 4:3 通栏，标题 20–24px/600，价格 / 关键数据 20–28px Bold","标签行 12px pill，正文 15–16px、行高 1.75，段落间距 16px","底部固定行动条高约 56–64px（主按钮 + 次按钮），价格与按钮同行时价格在左、按钮在右"],
+    scene:"商品详情、文章详情、房源 / 职位详情。",
+    src:[["杂志跨页层级指南","https://publuu.com/knowledge-base/designing-impactful-magazine-spreads-tips-and-trends/"]]},
+   {n:"仪表盘 / 数据大屏", t:"Dashboard / Data Wall", d:"先答案后证据：KPI 卡 → 主趋势图 → 分解图 → 明细表，视角距离决定字号。",
+    pts:["约：桌面端 KPI 卡 3–5 个一排，数字 28–36px；大屏（远看）标题约 32–48px、KPI 数字约 56–72px","分区标题 14–16px/600 + 12px 更新时间 / 数据口径；图表同行等高、轴标签对齐","刷新时间与数据来源放右下角 12px 灰色"],
+    scene:"运营后台、监控大屏、经营看板。",
+    src:[["仪表盘设计最佳实践","https://www.fusioncharts.com/blog/dashboard-design-best-practices"],["仪表盘设计原则","https://business-analytics-with-visualisation.yuvijen.com/2-visualization-design-for-business-audiences/17-dashboard-design-principles-and-best-practices.html"]]},
+   {n:"表单页 + 登录 / 注册", t:"Form & Sign-in / Sign-up", d:"一列到底、标签在上、错误贴着字段，登录页左文案右表单（或居中卡）。",
+    pts:["约：表单列宽 360–480px，标签 14px/500 在上、间距 8px","输入框高 40–48px、圆角 8–12px、内边距 12–16px，字段间距 16–20px，主按钮全宽高 44–48px","登录卡宽约 400px、圆角 16–24px、居中；错误文案 12–13px 红色贴字段下方，不用弹层打断"],
+    scene:"注册登录、设置表单、投稿 / 下单表单。",
+    src:[["Ant Design Input（高度 token 思路）","https://ant.design/components/input"]]},
+   {n:"空状态 + 错误页", t:"Empty State & Error Page", d:"讲清「为什么空 / 错了 + 下一步做什么」，不要只留一句「暂无数据」。",
+    pts:["约：居中布局，插画 / 图标约 120–160px，标题 18–20px 一行，说明 ≤3 行、14px 灰色","给 1 个次级行动（如「新建」「重试」「去看看」），不要在空状态用主按钮抢视觉","错误页加错误码 12px 灰色 +「返回首页 / 联系支持」链接；无结果页要回显用户输入的关键词"],
+    scene:"首次使用、搜索无结果、加载失败、404/500。",
+    src:[["SAP Fiori 空状态最佳实践","https://www.sap.com/design-system/fiori-design-web/v1-151/foundations/best-practices/global-patterns/designing-for-empty-states"],["LogRocket 空状态 UX","https://blog.logrocket.com/ux-design/empty-states-ux-examples/"]]},
+   {n:"设置页 + 个人中心", t:"Settings & Profile", d:"分组清单 + 头像区，设置是「开关清单」，个人中心是「头像 + 数据 + 入口清单」。",
+    pts:["约：头像 64–80px 圆形，昵称 18–20px/600，数据行（订单 / 收藏 / 积分）3–4 个均分","设置分组标题 13px 灰色、组间距 24px，行高 52–56px、左文案右控件（开关 / 箭头 / 当前值）","危险操作（注销 / 退出）单独分组、用红色文字；个人中心顶部可用品牌色弱化背景块（约 120–160px 高）","注：分组与行高为通用设计系统落地建议（约值）"],
+    scene:"账号设置、个人主页、会员中心。",
+    src:[["Ant Design 字号基线","https://ant.design/components/typography/"]]}
+ ]},
+ {id:"compstyle", no:"22", cn:"组件风格", en:"Component Styling · Visual Styles", items:[
+   {n:"按钮", t:"Buttons · Solid / Outline / Ghost / Pill", d:"同一按钮换风格只换「边框、阴影、圆角、字重」四样，尺寸骨架不变。",
+    pts:["约：主按钮高 40–48px、内边距 16–24px、字号 14–16px / 500–600","实心：品牌底 + 白字；描边：1–2px 品牌边 + 品牌字 + 透明底；幽灵：无边无底、仅文字色；胶囊：圆角 full","跨风格：极简 = 圆角 8–12px + 淡阴影；粗野 = 圆角 0 + 2px 黑边 + 硬阴影；玻璃 = 半透明底 + blur + 1px 亮边","圆角锚点（Tailwind v2 文档）：sm 2px、默认 4px、md 6px、lg 8px、xl 12px、2xl 16px、3xl 24px、full 9999px（pill）；Tailwind v4 默认值与 v2 略有出入，v4 项目以项目内主题为准"],
+    scene:"全站主 / 次行动；幽灵只用于低优先级（取消、更多）。",
+    src:[["Tailwind 圆角档位（v2 文档）","https://v2.tailwindcss.com/docs/border-radius"],["Neo-Brutalism 风格库","https://neubrutalism.com/"]]},
+   {n:"卡片", t:"Cards · Bordered / Shadowed / Flat", d:"卡片三选一：描边卡最稳、阴影卡最浮、扁平卡最省视觉。",
+    pts:["约：内边距 16px（紧凑 12px、宽松 20–24px），圆角 12–16px","描边卡：1px #E5E7EB、无阴影；阴影卡：约 0 2px 8px rgba(0,0,0,0.08) + 0 8px 24px rgba(0,0,0,0.06)；扁平卡：底色 #F5F5F4、无边无阴影","跨风格：极简 = 描边卡；粗野 = 2px 黑边 + 硬阴影 + 圆角 0；玻璃 = 半透明 + blur + 亮边"],
+    scene:"列表、仪表盘、信息分组；同屏只用一种卡片风格。",
+    src:[["Superdesign 风格库","https://superdesign.dev/styles"]]},
+   {n:"导航", t:"Navigation · Bottom / Top / Side", d:"导航的视觉重量要与页面层级匹配：底部重触达、顶部重品牌、侧边重层级。",
+    pts:["约：移动底部栏高 56–64px、图标 24px + 标签 11–12px、激活项用品牌色 + 字重 600","顶部栏高 56–64px、标题 17–18px/600、左侧返回 / 品牌、右侧 1–2 个图标","桌面侧边栏宽 200–240px（收起 64–72px 仅图标）、分组标题 12px 灰色、激活项浅色底块 + 左侧 3px 品牌条","跨风格：极简 = 细线分隔；玻璃 = 半透明模糊底；粗野 = 2px 黑边分隔"],
+    scene:"App 底部导航、Web 顶栏、管理后台侧边栏。",
+    src:[["iOS 字号指南（导航标题思路）","https://www.learnui.design/blog/ios-font-size-guidelines.html"]]},
+   {n:"表单控件", t:"Tags / Badges, Inputs, Switches & Selectors", d:"小控件靠「尺寸 + 颜色 + 描边」区分状态，文字永远是第一信息。",
+    pts:["约：标签 pill 高 22–28px、字号 12px、内边距 6–10px，状态色用浅底 + 深字（如成功浅绿底 #DCFCE7 + 深绿字 #166534，约值）","徽标（badge）数字 10–11px、白字红底、圆角 full；输入框高 40–48px、圆角 8–12px","占位文字须 ≥4.5:1 的弱化灰（如 #767676 在白底上约 4.54:1）；开关宽约 44–52px、高 24–28px","跨风格：极简 = 细边 + 浅灰底；粗野 = 黑边 + 方角开关；玻璃 = 半透明输入框 + blur"],
+    scene:"筛选标签、状态、表单、设置开关。",
+    src:[["颜色对比度（#767676 约 4.54:1）","https://accessibility.arizona.edu/web-apps/color-contrast"],["Ant Design Input","https://ant.design/components/input"]]}
+ ]},
+ {id:"palettes", no:"23", cn:"配色系统", en:"Color Systems · Visual Styles", items:[
+   {n:"深色数据风", t:"Dark Data", d:"深底 + 浅字天然高对比；图表色须配图形 / 文字双编码，勿只靠颜色区分涨跌。色值多为组合建议（约值），须实测对比度后使用。", sw:["#7C8CFF","#22D3EE","#0F1117","#171A21","#E6E8EC"],
+    pts:["主色 #7C8CFF（约，降饱和蓝紫）；强调 #22D3EE（约，仅图表 / 高亮）","背景 #0F1117；表面 #171A21 / #1F232E；正文 #E6E8EC / 次要 #9AA3B2","深色参考（Material 3）：主色 #D0BCFF、表面 #1C1B1F、表面文字 #E6E1E5 —— 可直接替换本套的主色 / 表面组合"],
+    scene:"交易、监控、数据大屏等深色数据界面。",
+    src:[["Material 3 深色配色","https://ggprompts.com/styles/dark-mode-material.html"],["WCAG 对比度标准","https://accessibility.arizona.edu/web-apps/color-contrast"]]},
+   {n:"浅色清新风", t:"Light Fresh", d:"白底 + 近黑正文高对比；蓝色按钮配白字须实测，通不过改 #1D4ED8。色值多为组合建议（约值）。", sw:["#2563EB","#06B6D4","#F8FAFC","#FFFFFF","#111827"],
+    pts:["主色 #2563EB（约）；强调 #06B6D4（约）","背景 #F8FAFC；表面 #FFFFFF；正文 #111827 / 次要 #6B7280"],
+    scene:"通用产品、工具、内容类浅色界面。",
+    src:[["WCAG 对比度标准","https://accessibility.arizona.edu/web-apps/color-contrast"]]},
+   {n:"高活力撞色", t:"Vibrant Contrast", d:"撞色只做标题、徽标、按钮描边；正文一律近黑，黄色上不用白字。色值多为组合建议（约值），主色慎用。", sw:["#FF4D00","#FFD400","#FFFDF5","#FFFFFF","#111111"],
+    pts:["主色 #FF4D00（约，慎用）；强调 #FFD400（约，仅装饰 / 大字）","背景 #FFFDF5；表面 #FFFFFF；正文 #111111"],
+    scene:"活动页、青年品牌、营销落地页。",
+    src:[["WCAG 对比度标准","https://accessibility.arizona.edu/web-apps/color-contrast"]]},
+   {n:"莫兰迪", t:"Muted Morandi", d:"低饱和 = 高级但易低对比：正文须用深灰 #3E3A38，次要灰只用于大字 / 非关键信息，须实测。", sw:["#8B8589","#D4A59A","#F2EFEA","#E9E4DD","#3E3A38"],
+    pts:["主色 #8B8589（暖灰，来源见下）；强调 #D4A59A（柔陶，来源见下）","背景 #F2EFEA；表面 #FFFFFF / #E9E4DD；正文 #3E3A38 / 次要 #7A726E"],
+    scene:"生活方式、家居、美妆、文创类柔和界面。",
+    src:[["莫兰迪参考色（暖灰 / 柔陶）","https://bricxlabs.com/blogs/muted-colors"]]},
+   {n:"高对比无障碍", t:"Accessible High-Contrast", d:"目标 AA 以上：正文纯黑、链接加下划线、焦点描边 3px；#595959 在白底约 7:1，适合次要文字。色值多为组合建议（约值）。", sw:["#0B5FFF","#B40000","#FFFFFF","#000000","#595959"],
+    pts:["主色 #0B5FFF（约，深蓝）；强调 #B40000（约，仅错误 / 警示）","背景 #FFFFFF；表面 #FFFFFF / #F2F2F2；正文 #000000 / 次要 #595959（白底 AAA 约 7:1 档）","无障碍目标：正文 / 背景 ≥4.5:1、大字 ≥3:1、非文本组件 ≥3:1"],
+    scene:"政务、医疗、金融与无障碍要求高的产品。",
+    src:[["WCAG 对比度标准（AA / AAA）","https://accessibility.arizona.edu/web-apps/color-contrast"]]}
+ ]}
+ ];
+
+ /* ===== 虚拟币量化研究平台模式（85 条，与虚拟币资料页同源） ===== */
+ var CRYPTO_CATS = [
+  {
+   "id": "crypto-s1",
+   "no": "24",
+   "cn": "虚拟币 · 币种列表",
+   "en": "Crypto · Coin List",
+   "items": [
+    {
+     "n": "长按上下文菜单",
+     "t": "LONG-PRESS CONTEXT MENU",
+     "d": "长按币种行，弹出该币的预览卡 + 快捷操作，不必先进入详情页。",
+     "pts": [
+      "约长按 400–500ms 触发 + 轻震动（haptic）",
+      "菜单最多约 5–6 项，常用项置顶；子菜单至多一层（Apple HIG 语境菜单原则）",
+      "预览卡内不放可点按钮（手指还按着时点不到），操作放在下方菜单；松手或点空白处关闭"
+     ],
+     "scene": "在 BTC 行长按 → 预览 24h 迷你走势 + 现价/涨跌幅，下方一键：查看 K 线 / 设提醒 / 加自选 / 分享 / 去交易 / 复制交易对（如 BTC/USDT）。",
+     "src": [
+      [
+       "Apple HIG · Context Menus",
+       "https://zyun.gitbook.io/temporary-views/official/human-interface-guidelines/original/context-menus"
+      ],
+      [
+       "Apple 支持 · 触摸并按住",
+       "https://support.apple.com/en-by/guide/iphone/iphcc8f419db/ios"
+      ]
+     ]
+    },
+    {
+     "n": "长按预览卡",
+     "t": "PEEK CARD / PREVIEW",
+     "d": "长按时先给「够做决定」的信息，松手可上滑展开操作或继续按压进入详情（Peek → Pop 思路）。",
+     "pts": [
+      "预览卡约宽 300–340pt、高约 180–220pt，手指不遮挡关键数字",
+      "内容：现价、24h 涨跌、24h 高/低、24h 量、市值、7 日 sparkline、资金费率（如为永续）",
+      "上滑约 40pt 展开全部操作"
+     ],
+     "scene": "刷榜单时快速判断新币：只看预览卡的量 / 市值 / 涨跌就决定是否点进 K 线，避免来回跳转。",
+     "src": [
+      [
+       "Apple 支持 · 触摸并按住",
+       "https://support.apple.com/en-by/guide/iphone/iphcc8f419db/ios"
+      ],
+      [
+       "Dexscreener 新币列表",
+       "http://dexscreener.com/new-pairs/solana"
+      ]
+     ]
+    },
+    {
+     "n": "左滑 / 右滑行内操作",
+     "t": "SWIPE ACTIONS",
+     "d": "滑动一行即完成高频操作，不进详情页。",
+     "pts": [
+      "左滑约露出 2 项（设提醒、删除/移出自选），右滑约露出 2 项（置顶、收藏/加自选）",
+      "滑动超过约 50% 行宽可「滑满触发」并震动",
+      "破坏性操作（删除）用可撤销 Toast（约 3–5 秒内撤销），不要直接弹确认框打断刷榜"
+     ],
+     "scene": "自选里左滑 ETH 设「跌破 $3,000 提醒」；右滑把正在盯的 BTC 置顶；左滑删掉已卖出的山寨币。",
+     "src": [
+      [
+       "Apple HIG · Gestures",
+       "https://codershigh.github.io/guidelines/ios/human-interface-guidelines/interaction/gestures/index.html"
+      ]
+     ]
+    },
+    {
+     "n": "置顶币种",
+     "t": "PINNED COINS",
+     "d": "置顶币固定在列表顶部，不随排序 / 涨跌榜滚动而消失。",
+     "pts": [
+      "置顶区约 1–3 个币，带置顶角标与浅色底区分",
+      "置顶币仍实时刷新价格；取消置顶回到原排序",
+      "置顶上限约 5 个，超限提示「先取消一个置顶」"
+     ],
+     "scene": "无论切到涨幅榜还是新币榜，BTC、ETH、SOL 始终在顶部可点，适合盯盘时快速切币。",
+     "src": [
+      [
+       "Binance Square · 市场页定制",
+       "https://www.binance.com/en-ZA/square/post/377428296914918"
+      ]
+     ]
+    },
+    {
+     "n": "自选分组管理",
+     "t": "WATCHLIST GROUPS",
+     "d": "自选不是一个大杂烩，而是按策略 / 主题分桶。",
+     "pts": [
+      "分组如「主流 / DeFi / Meme / 待观察 / 策略池」，横向 Tab 或分组标题折叠",
+      "新建分组约 1 步（长按 → 移入分组 → 新建）",
+      "每组显示组内涨跌家数（如 7 涨 3 跌）和组均涨跌"
+     ],
+     "scene": "把「网格候选池」和「均线策略池」分开，回测只对某一组跑，避免把 Meme 币混进主流策略。",
+     "src": [
+      [
+       "CoinMarketCap Watchlist",
+       "https://coinmarketcap.com/watchlist/5fffb8b1ec49bb00128d52e4/"
+      ]
+     ]
+    },
+    {
+     "n": "拖拽排序自选",
+     "t": "DRAG TO REORDER",
+     "d": "长按拖动手柄上下拖动，重排自选顺序，松手即保存。",
+     "pts": [
+      "拖动时该行约放大 1.03 倍 + 阴影，目标位置出现插入线",
+      "列表近顶部 / 底部边缘约 60pt 内自动滚动；拖动结束给轻震动",
+      "编辑态行右侧出现拖动手柄，避免与滑动操作冲突（编辑态下禁用左滑）"
+     ],
+     "scene": "把今日重点盯的币拖到自选前三位，配合置顶形成「今日盯盘顺序」。",
+     "src": [
+      [
+       "Apple HIG · Gestures",
+       "https://codershigh.github.io/guidelines/ios/human-interface-guidelines/interaction/gestures/index.html"
+      ]
+     ]
+    },
+    {
+     "n": "搜索联想与纠错",
+     "t": "SEARCH SUGGESTIONS / AUTOCOMPLETE",
+     "d": "输入即联想，拼错 / 简写也能找到币。",
+     "pts": [
+      "输入约 1–2 字符即出联想（防抖约 200–300ms）",
+      "每条显示图标 + 代码 + 全名 + 现价/涨跌；支持代码、全名、中文名、合约地址片段",
+      "无结果时给「可能想找：」近似项 + 查新币入口；最近搜索约保留 8 条，可一键清除"
+     ],
+     "scene": "输入 pepe 同时出现 PEPE / PEPE2 / PEPECOIN，靠市值与链标签区分，避免买错同名 Meme 币；输入合约地址前 6 位直达新币。",
+     "src": [
+      [
+       "CoinGecko 列表",
+       "https://www.coingecko.com/?page=10&items=300"
+      ]
+     ]
+    },
+    {
+     "n": "行内多维信息密度",
+     "t": "COMPACT MULTI-METRIC ROW",
+     "d": "一行同时回答「多少钱、涨多少、量大不大」，不用点进去。",
+     "pts": [
+      "左：图标 + 代码/全名；中：sparkline（约 56×28pt）；右：现价 + 24h 涨跌（带 ↑↓ 箭头）",
+      "次行小字：市值 / 24h 量 / 换手",
+      "涨跌幅超过约 ±10% 时用更饱和的色块或火焰标识"
+     ],
+     "scene": "榜单横扫时一眼区分「涨但无量」（假突破）与「涨且放量」（真启动）。",
+     "src": [
+      [
+       "Dexscreener 新币列表",
+       "http://dexscreener.com/new-pairs/solana"
+      ]
+     ]
+    },
+    {
+     "n": "3D 币面翻转卡片",
+     "t": "3D FLIPPING COIN CARD",
+     "d": "币种卡片像真实硬币一样 3D 翻面：正面是价格，背面是持仓 / 策略信号。",
+     "pts": [
+      "点击或左右拖动超约 40% 宽度触发翻面，翻转动画约 0.6–0.8 秒绕 Y 轴 180°，中途加轻震动",
+      "正面：币标、现价、24h 涨跌、迷你走势；背面：持仓占比、成本价、浮盈、最近 1 条策略信号",
+      "翻面状态不跨币种记忆，切币后默认回正面；低电量 / 减动效模式下降级为淡入淡出"
+     ],
+     "scene": "自选列表里点 BTC 卡片翻面，立刻看到「成本 $60,000、浮盈 +62%」，不用进详情页翻三屏。",
+     "srcNote": "【提案】3D 翻转可用系统 3D 变换实现，无特定公开加密产品佐证；视觉灵感为通用卡片翻转模式。",
+     "tag": "提案"
+    },
+    {
+     "n": "触感三件套：视差卡片、长按价格、震动分级",
+     "t": "TACTILE TRIO",
+     "d": "卡片随手倾斜微视差、长按价格复制或换计价、不同事件配不同震动，一摸就懂轻重缓急。",
+     "pts": [
+      "陀螺仪视差：卡片倾斜时背景与币种图标反向位移约 4–8pt，倾斜超约 15° 不再放大位移，省电且防晕",
+      "长按价格（约 0.5 秒）：弹出菜单「复制价格 / 计价切换 USDT→BTC→USD / 设提醒」，复制后约 1 秒 Toast「已复制」",
+      "震动分级：轻提醒用 light impact，设提醒成功用 notification success，突破关键价用 heavy impact + success 组合，连续提醒间隔 ≥10 秒，避免震动轰炸"
+     ],
+     "scene": "群里报「BTC 97,500」，长按自己 App 里的价格一键复制去核对；半夜突破价的强震动和普通提醒的轻震动，闭眼也分得清。",
+     "src": [
+      [
+       "iOS 震动分级（UIImpact / UINotification 反馈生成器）",
+       "https://sarunw.com/posts/play-haptic-feedback-using-uifeedbackgenerator/"
+      ]
+     ]
+    }
+   ]
+  },
+  {
+   "id": "crypto-s2",
+   "no": "25",
+   "cn": "虚拟币 · K 线与图表交互",
+   "en": "Crypto · Charts",
+   "items": [
+    {
+     "n": "十字光标",
+     "t": "CROSSHAIR",
+     "d": "手指按住图表拖动，十字线跟随，顶部 / 侧边实时显示该根 K 线的 OHLC 与涨跌。",
+     "pts": [
+      "长按约 300ms 进入十字光标态（区别于点按），松手后约 1.5–2 秒自动退出或点空白退出",
+      "光标线约 1pt 虚线；顶部信息条固定显示：时间、开/高/低/收、涨跌幅、成交量",
+      "拖动时图表锁定不滚动，避免误触"
+     ],
+     "scene": "复盘 BTC 插针：拖到最低点那根 K 线，确认最低价是否打到自己的网格买入价 / 止损价。",
+     "src": [
+      [
+       "TradingView 图表交互指南",
+       "https://www.financialtechwiz.com/post/how-to-zoom-out-on-tradingview/"
+      ]
+     ]
+    },
+    {
+     "n": "双指缩放与平移",
+     "t": "PINCH TO ZOOM / PAN",
+     "d": "双指张合缩放时间密度，单指拖动平移时间轴。",
+     "pts": [
+      "张开 = 放大（看更少 K 线、更细结构），合拢 = 缩小（看更长历史）；缩放锚点为双指中心",
+      "平移时右侧实时价格轴跟随；双击可恢复自适应（TradingView 桌面端为双击价格轴重置）",
+      "缩放后保留当前指标与画线"
+     ],
+     "scene": "1m 图上先缩放到 1 周看趋势，再放大到最近 2 小时找入场 K 线组合。",
+     "src": [
+      [
+       "TradingView 移动端缩放",
+       "https://www.financialtechwiz.com/post/how-to-zoom-out-on-tradingview/"
+      ]
+     ]
+    },
+    {
+     "n": "周期切换与过渡",
+     "t": "TIMEFRAME SWITCHING",
+     "d": "1m / 15m / 1h / 4h / 1D 一键切换，切换时有平滑过渡而不是白屏重绘。",
+     "pts": [
+      "周期条横向可滑，当前周期高亮胶囊；切换动画约 200–300ms（旧 K 线淡出 + 新 K 线淡入/缩放）",
+      "切换时保留：同一币种、同一指标开关、同一画线（按时间映射）",
+      "切换失败保留旧图 + 顶部提示「周期数据加载失败」"
+     ],
+     "scene": "均线策略验证：同一信号在 15m、1h、4h 下是否共振，快速连点三个周期对比。",
+     "src": [
+      [
+       "Toobit 接入 TradingView 移动端",
+       "https://thecryptobasic.com/2026/06/29/toobit-brings-tradingview-charting-tools-to-its-mobile-app/"
+      ]
+     ]
+    },
+    {
+     "n": "指标开关与叠加",
+     "t": "INDICATOR TOGGLES / OVERLAYS",
+     "d": "MA / EMA / MACD / RSI / 布林带一键开关，参数可调，叠加不遮挡价格。",
+     "pts": [
+      "指标面板用底部面板（Bottom Sheet）；开关即时生效（约 <200ms 重绘）",
+      "MA/EMA/布林带画主图，MACD/RSI 在副图（各约高 80–120pt）",
+      "常用默认：MA 7/25/99（约）、EMA 12/26、MACD 12/26/9、RSI 14（公开 Pine 脚本默认值）；RSI 70/30 超买超卖线用虚线"
+     ],
+     "scene": "看 SOL：主图 MA 判断趋势，副图 RSI>70 提示超买，MACD 金叉/死叉与价格背离对照。",
+     "src": [
+      [
+       "MACD/RSI 默认参数脚本",
+       "https://my.tradingview.com/scripts/n-macd/?script_access=all&script_type=indicators"
+      ]
+     ]
+    },
+    {
+     "n": "画线工具",
+     "t": "DRAWING TOOLS",
+     "d": "趋势线 / 水平线 / 斐波那契 / 矩形区间，直接在图上点两点画出来。",
+     "pts": [
+      "工具栏收起为底部画笔入口，展开为横向工具条；点第一锚点 → 点第二锚点成线，水平线只需点一次价格",
+      "选中线后出现锚点手柄（约 24pt 触摸区）可拖改；支持延长线、颜色/线宽、删除、撤销（约保留 20 步）",
+      "画线按币种 + 周期保存，云同步"
+     ],
+     "scene": "在 BTC 4h 图画支撑/阻力水平线，价格接近线时与提醒联动；画斐波那契回撤看 ETH 反弹目标位。",
+     "src": [
+      [
+       "TradingView 画线流程",
+       "https://www.financialtechwiz.com/post/how-to-draw-on-tradingview/"
+      ],
+      [
+       "画线工具补充",
+       "https://pineify.app/resources/blog/how-to-add-drawing-tools-in-tradingview"
+      ]
+     ]
+    },
+    {
+     "n": "分时线与深度图切换",
+     "t": "LINE / DEPTH CHART TOGGLE",
+     "d": "K 线、分时线、深度图三态一键切换，服务不同问题。",
+     "pts": [
+      "分时线：当日价格线 + 均价线 + 下方成交量柱",
+      "深度图：横轴价格、纵轴累计量，买盘绿区 / 卖盘红区、中间为最新价",
+      "切换约 200ms 内完成，保留当前币种与周期；深度图点按显示该价位累计挂单量"
+     ],
+     "scene": "暴涨当日用分时线看日内走势；下单前切深度图看 BTC 在 $90,000 上方有没有大卖单墙。",
+     "src": [
+      [
+       "COINQ 深度图说明",
+       "https://support.coinq.com/hc/en-001/articles/49172521811609-Contract-Order-Book-and-Market-Depth-APP"
+      ]
+     ]
+    },
+    {
+     "n": "点按数值气泡",
+     "t": "TAP TOOLTIP / DATA BUBBLE",
+     "d": "点一下 K 线，弹出该点数值气泡，不必进入十字光标长按。",
+     "pts": [
+      "气泡跟随手指位置自动贴边（近右边缘时左移，避免出屏）",
+      "气泡内：时间、收盘价、涨跌幅、量；约 3 秒无操作自动消失",
+      "与十字光标的区别：点按 = 轻量查看，长按拖动 = 连续查看"
+     ],
+     "scene": "快速核对某根爆仓 K 线的收盘价与成交量，决定是否把该价位设为提醒。",
+     "src": [
+      [
+       "TradingView 图表交互指南",
+       "https://www.financialtechwiz.com/post/how-to-zoom-out-on-tradingview/"
+      ]
+     ]
+    },
+    {
+     "n": "横屏全屏图表",
+     "t": "LANDSCAPE FULLSCREEN CHART",
+     "d": "横屏或点全屏按钮，图表占满屏幕，指标与画线工具浮在图上。",
+     "pts": [
+      "横屏时隐藏底部导航与标题栏，周期条与指标入口移到顶部 / 侧边浮层",
+      "全屏下保留收藏的画线工具条（TradingView 全屏思路：主工具栏隐藏、收藏工具浮层保留）",
+      "竖屏返回时恢复原周期与光标位置；横屏下双指缩放与十字光标手势不变"
+     ],
+     "scene": "睡前复盘：横屏看 BTC 日线 + 布林带 + 成交量，画线不受竖屏窄宽度限制。",
+     "src": [
+      [
+       "TradingView 全屏画线说明",
+       "https://www.financialtechwiz.com/post/how-to-draw-on-tradingview/"
+      ],
+      [
+       "Toobit 横屏全屏报道",
+       "https://thecryptobasic.com/2026/06/29/toobit-brings-tradingview-charting-tools-to-its-mobile-app/"
+      ]
+     ]
+    },
+    {
+     "n": "K 线手势全家桶",
+     "t": "CHART GESTURES",
+     "d": "详情页左右滑切币、K 线上捏合换粒度、双击切指标，还能手画一段走势找相似币。",
+     "pts": [
+      "左右滑：沿自选顺序切币，滑距超约 60pt 才切换，切换时顶部币名约 0.25 秒淡入",
+      "捏合：张开→粒度变大（1h→4h→1d），捏合→变小，全程不离开 K 线；双击：MA ↔ BOLL ↔ 成交量三态循环，指标名以约 1 秒小标签提示",
+      "手画形态【提案】：手指在 K 线上画约 10–30 根 K 线的走势，归一化后与全市场近 90 日走势做相似度匹配，返回相似度约 ≥0.8 的前 5 个币，并标出「当时之后 7 日涨跌」作对照（非预测）"
+     ],
+     "scene": "复盘 BTC 的「圆弧底」：画出弧形，系统找出 ETH、SOL 历史上走过类似弧形的时段，对比后续走势做研究参考。",
+     "src": [
+      [
+       "TradingView 形态识别（类比，非等同）",
+       "https://th.tradingview.com/support/solutions/43000706927/"
+      ],
+      [
+       "社区「相似 K 线」指标",
+       "https://www.tradingview.com/script/TnhUbUtv-Similar-Bars-Pattern-Detecter/"
+      ]
+     ]
+    }
+   ]
+  },
+  {
+   "id": "crypto-s3",
+   "no": "26",
+   "cn": "虚拟币 · 价格与涨跌动效",
+   "en": "Crypto · Price Motion",
+   "items": [
+    {
+     "n": "涨跌颜色约定（中西双轨）",
+     "t": "UP/DOWN COLOR CONVENTION",
+     "d": "颜色不是装饰，是「涨/跌」的第一信号；必须让用户选，且全 App 一致。",
+     "pts": [
+      "两套主题：① 中国惯例红涨绿跌；② 国际惯例绿涨红跌",
+      "默认按地区/语言给（中文用户默认红涨绿跌），设置里可一键切换并即时全量刷新",
+      "不要只用颜色传达涨跌——同时配 ↑↓ 箭头与 +/− 符号，照顾色盲用户；K 线、列表、持仓、策略收益同套颜色"
+     ],
+     "scene": "同一用户在 Binance（国际绿涨）与国内行情 App（红涨）之间切换时不误读；回测曲线与实盘持仓颜色一致。",
+     "src": [
+      [
+       "红涨绿跌文化惯例讨论",
+       "https://www.retirejapan.com/forum/viewtopic.php?p=37356&sid=fd2b0f03603553e03ae0ce40b2b54880"
+      ],
+      [
+       "交易所颜色编码",
+       "https://dev.to/iri_denis/how-to-design-a-user-friendly-crypto-exchange-interface-from-a-developers-perspective-23kj"
+      ]
+     ]
+    },
+    {
+     "n": "价格数字滚动",
+     "t": "NUMBER ROLLING / TICKER ROLL",
+     "d": "价格变化时数字像老虎机一样滚动到新值，而不是生硬跳变。",
+     "pts": [
+      "仅变化的数位滚动，约 200–400ms 缓动；滚动期间保持行宽不变（等宽字体）",
+      "小数位数按币种固定（BTC 约 1–2 位、山寨币约 4–6 位、极小币种保留有效位）",
+      "高频 tick 时不每次都滚（配合节流，见「实时跳动节流」）"
+     ],
+     "scene": "BTC 从 $89,700 快速拉到 $89,850 时，用户能感知「在涨」而不是只看到数字闪烁。",
+     "src": [
+      [
+       "波动期 UI 动效设计",
+       "https://www.pttrns.com/designing-for-volatility-how-ui-ux-can-support-users-during-bitcoin-price-swings/"
+      ]
+     ]
+    },
+    {
+     "n": "价格闪烁",
+     "t": "PRICE FLASH",
+     "d": "价格变动瞬间整格闪一下颜色，方向一眼可见。",
+     "pts": [
+      "涨：背景约 300–500ms 淡入涨色再淡出；跌同理",
+      "只闪背景不闪文字（避免阅读困难）；同一行约 500ms 内不重复闪，防频闪",
+      "可设置关闭闪烁（护眼 / 光敏友好）"
+     ],
+     "scene": "自选列表静置时某币突然闪红，用户余光即知「它在跌」，再点进去看原因。",
+     "src": [
+      [
+       "Pttrns 波动设计（柔和琥珀色弱化恐慌红闪）",
+       "https://www.pttrns.com/designing-for-volatility-how-ui-ux-can-support-users-during-bitcoin-price-swings/"
+      ]
+     ]
+    },
+    {
+     "n": "24h 涨跌幅条",
+     "t": "CHANGE BAR",
+     "d": "一条横向条，直观显示现价在「今日高–低」区间里的位置。",
+     "pts": [
+      "条形约高 4–6pt，左端为 24h 最低、右端为最高，当前价用圆点 / 竖线标出",
+      "涨跌幅文字配色与条同色",
+      "点按条可切换显示 1h / 24h / 7d 涨跌"
+     ],
+     "scene": "ETH 24h +5% 但位置接近 24h 最高 → 追高风险；BTC 跌 3% 但仍在区间中部 → 不必恐慌。",
+     "src": [
+      [
+       "CoinGecko 多周期涨跌范式",
+       "https://www.coingecko.com/?page=10&items=300"
+      ]
+     ]
+    },
+    {
+     "n": "迷你走势图",
+     "t": "SPARKLINE",
+     "d": "列表行里一条 7 日小曲线，走势形状比单一涨跌幅更有信息。",
+     "pts": [
+      "约 56×28pt，线宽约 1.5pt，无坐标轴",
+      "颜色跟随周期涨跌；极端波动时用填充面积增强感知",
+      "点按 sparkline 可放大为该币 7 日小图（底部面板）"
+     ],
+     "scene": "两个币 24h 都是 +8%：一个稳步上行、一个暴涨暴跌回落——后者不适合网格策略。",
+     "src": [
+      [
+       "Sparkline 实现参考（学位论文）",
+       "https://www.theseus.fi/bitstream/10024/912093/2/TaThiThanh_Thuy.pdf"
+      ]
+     ]
+    },
+    {
+     "n": "实时跳动节流与动画",
+     "t": "TICK THROTTLING",
+     "d": "行情每秒多次推送时，UI 按节奏刷新，不卡顿、不眼花。",
+     "pts": [
+      "建议：列表价格约 500ms–1s 合并刷新一次，K 线最新价约 200–500ms，盘口约 100–300ms",
+      "只更新变化的单元格（差分渲染），不整列表重绘",
+      "切后台时降频或暂停推送，回到前台立即补一次快照；网络抖动先保留旧价 + 显示「延迟」标识，不要清零"
+     ],
+     "scene": "暴涨暴跌时 BTC tick 每秒数十次，节流后列表仍流畅，K 线最新一根蜡烛平滑生长。",
+     "src": [
+      [
+       "前端差分更新实现思路",
+       "https://www.theseus.fi/bitstream/10024/912093/2/TaThiThanh_Thuy.pdf"
+      ]
+     ]
+    },
+    {
+     "n": "暴跌 / 暴涨的克制反馈",
+     "t": "VOLATILITY-AWARE FEEDBACK",
+     "d": "极端行情下 UI 不火上浇油：弱化恐慌色、突出风险信息。",
+     "pts": [
+      "当某币 5 分钟跌幅约 >5% 或 24h 跌幅约 >15% 时：顶部出现温和提示条（如「BTC 30 分钟跌 5%，检查止损/保证金」），而非全屏红闪",
+      "同时露出「暂停交易」与「查看爆仓数据」入口；不自动弹窗诱导交易"
+     ],
+     "scene": "检索当日（2026-10-25）即有 BTC 1 小时内巨鲸抛售致约 $2,000 急跌并引发双向爆仓的报道——这类时刻用户应先看到风险提示而非冲动下单。",
+     "src": [
+      [
+       "Pttrns 波动设计",
+       "https://www.pttrns.com/designing-for-volatility-how-ui-ux-can-support-users-during-bitcoin-price-swings/"
+      ],
+      [
+       "爆仓事件报道",
+       "https://bitrss.com/bitcoin-whipsaws-as-1-39-billion-whale-dump-triggers-coordinated-sell-off-158279"
+      ]
+     ]
+    },
+    {
+     "n": "数字滚动 + 颜色脉冲（成套）",
+     "t": "ROLLING NUMBERS & PRICE PULSE",
+     "d": "在单条的数字滚动 / 价格闪烁之上，把两者绑成一套：价格变动时数字像老虎机滚动，涨绿 / 跌红先闪一下再淡回正常色，箭头与数字同向滚动。",
+     "pts": [
+      "用 SwiftUI .contentTransition(.numericText()) 做逐位滚动，动画约 0.3–0.5 秒；涨：背景先闪方向色约 0.4 秒再淡出，跌同理",
+      "每秒多次跳动时节流到约 2 次/秒，避免闪烁；涨跌箭头与数字同向滚动（涨向上滚、跌向下滚）",
+      "大字价与小字涨跌幅共用同一套颜色语义（与本页「涨跌颜色约定」的双轨设置一致）"
+     ],
+     "scene": "盯 BTC 插针瞬间：价格从 97,200 滚到 96,850，红色脉冲一闪，眼睛不用读数字就知道方向和幅度量级。",
+     "src": [
+      [
+       "SwiftUI numericText 内容过渡（数字滚动）",
+       "https://www.createwithswift.com/animating-numeric-text-in-swiftui-with-the-content-transition-modifier/"
+      ]
+     ]
+    },
+    {
+     "n": "里程碑彩带",
+     "t": "MILESTONE CONFETTI",
+     "d": "盈利目标、持仓翻倍、提醒价首次触发时，屏幕撒一次彩带 / 烟花庆祝。",
+     "pts": [
+      "触发条件须用户自设（如「BTC 持仓浮盈 +50%」「自选币破前高」），不由系统乱撒",
+      "动画约 1.2–1.8 秒，粒子约 80–120 片，从顶部下落，期间不遮挡价格数字",
+      "同一里程碑 24 小时内只庆祝 1 次；提供「关闭庆祝动画」开关；下跌触发止损时不撒彩带，改用冷色提示，避免庆祝亏损"
+     ],
+     "scene": "设的「ETH 破 $4,000」提醒触发时，K 线页撒彩带 + 显示「距你的目标价已达成」，截图分享也更有仪式感。",
+     "srcNote": "【提案】触发条件与粒子数为设计值；庆祝动效本身为通用设计模式，无特定加密产品来源。",
+     "tag": "提案"
+    },
+    {
+     "n": "价格粒子背景",
+     "t": "PARTICLE PRICE BACKGROUND",
+     "d": "App 内背景随涨跌变成流动的粒子潮：涨时粒子向上涌、跌时向下沉，氛围跟着行情走。",
+     "pts": [
+      "粒子数约 60–120 个，帧率不低于约 50fps 才开启，低端机自动降为静态渐变",
+      "背景透明度约 ≤15%，不影响价格数字可读性",
+      "【实验开关，默认关】放在设置里由用户主动打开"
+     ],
+     "scene": "牛市夜里打开 App，背景粒子随 BTC 上涨往上涌，氛围感拉满但数字依然清晰。",
+     "srcNote": "【提案】无已验证的公开加密产品来源；仅作实验性氛围层，不承载信息。",
+     "tag": "提案"
+    }
+   ]
+  },
+  {
+   "id": "crypto-s4",
+   "no": "27",
+   "cn": "虚拟币 · 提醒与预警",
+   "en": "Crypto · Alerts",
+   "items": [
+    {
+     "n": "价格提醒",
+     "t": "PRICE ALERT",
+     "d": "设一个价或一个幅度，到价即推，不必盯盘。",
+     "pts": [
+      "类型（公开的 Binance 提醒类型）：价格涨破 / 跌至 / 涨幅超 / 跌幅超 / 24h 涨幅超 / 24h 跌幅超",
+      "设价提供快捷步进（±1% / ±5% / ±10%）与「当前价 ±」按钮；频率：一次 / 每天重复",
+      "触发后默认一次性失效（OKX 公开说明：只通知一次，触发后删除）；提醒列表可开关、编辑、删除"
+     ],
+     "scene": "BTC 现价 $89,000，设「涨破 $92,000」+「跌破 $85,000」双向提醒，突破任一即收到推送并可一键进 K 线。",
+     "src": [
+      [
+       "Binance 提醒类型整理",
+       "https://kamcord.com/how-to-set-a-price-alert-on-the-binance-app/"
+      ],
+      [
+       "OKX 一次性提醒说明",
+       "https://www.okx.com/en-br/help/how-do-i-set-a-price-alert-for-p2p-trading-app"
+      ]
+     ]
+    },
+    {
+     "n": "指标 / 信号提醒",
+     "t": "INDICATOR & SIGNAL ALERT",
+     "d": "不只盯价格，还盯指标事件。",
+     "pts": [
+      "条件：RSI 穿 70/30、MACD 金叉/死叉、价格穿 MA、布林带突破、成交量突增",
+      "多条件 AND/OR 组合（如「RSI<30 且 MACD 金叉」）",
+      "每个提醒注明币种 + 周期 + 条件，避免收到提醒却不知道触发了什么"
+     ],
+     "scene": "ETH 4h RSI 跌破 30 + MACD 金叉 → 提醒「均线策略候选信号」，直接跳转到该策略回测页。",
+     "src": [
+      [
+       "TradingView 提醒类型整理",
+       "https://medium.com/@xialang22/how-to-set-crypto-price-alerts-without-watching-charts-all-day-d6ef60dbc69b"
+      ],
+      [
+       "多条件筛选器",
+       "https://bitlogic.info/crypto-screener/"
+      ]
+     ]
+    },
+    {
+     "n": "异动提醒",
+     "t": "ANOMALY ALERT",
+     "d": "链上与衍生品异动先于价格异动，值得单独提醒：大额转账 / 爆仓 / 资金费率异常。",
+     "pts": [
+      "大额转账：单笔约 >$1M 或 >100 BTC 转入交易所",
+      "爆仓潮：某币 1h 爆仓约 >$10M；资金费率异常：约 >0.05%/8h 或 <−0.05%/8h；持仓量突增：OI 24h 约 >20%",
+      "提醒卡片写清数值、方向、来源（如 Coinglass / 链上），点按进「异动详情」而非直接进交易页"
+     ],
+     "scene": "某鲸鱼向 Binance 转入 5,000 BTC → 提醒「大额转入交易所，警惕抛压」；ETH 资金费率飙至 0.1%/8h → 提醒「多头拥挤，警惕多杀多」。",
+     "src": [
+      [
+       "Coinglass 功能（爆仓/费率/巨鲸）",
+       "https://coinbeehub.com/en/basis/market/coinglass"
+      ],
+      [
+       "资金费率拥挤阈值讨论",
+       "https://www.rektcalc.com/dashboard.html"
+      ]
+     ]
+    },
+    {
+     "n": "提醒触发反馈",
+     "t": "TRIGGER FEEDBACK",
+     "d": "触发那一刻，用户在任何场景都能感知且能行动：震动 / 横幅 / 角标。",
+     "pts": [
+      "App 内：顶部横幅（约 4 秒自动收起）+ 对应币行闪烁 + 提醒中心角标 +1",
+      "App 外：推送标题写「BTC 跌破 $85,000（现价 $84,920，−2.1%）」，副标题写触发条件",
+      "震动：重要提醒约 2 次短震，普通提醒 1 次；点推送直达该币 K 线并定位到触发价位水平线"
+     ],
+     "scene": "半夜 BTC 跌破提醒价，锁屏横幅直接显示现价与跌幅，用户不用解锁就能判断是否起床处理。",
+     "src": [
+      [
+       "Binance/OKX 推送范式",
+       "https://kamcord.com/how-to-set-a-price-alert-on-the-binance-app/"
+      ],
+      [
+       "Apple 锁屏通知响应",
+       "https://support.apple.com/en-by/guide/iphone/iphcc8f419db/ios"
+      ]
+     ]
+    },
+    {
+     "n": "提醒列表管理与防疲劳",
+     "t": "ALERT LIST & FATIGUE CONTROL",
+     "d": "提醒多了会麻木，要能批量管、能限流。",
+     "pts": [
+      "列表按「待触发 / 已触发 / 已关闭」分组；可按币种一键全关",
+      "限流：同一币同一类型约 1 小时内至多 1 条（第三方异动产品的公开做法，防疲劳）",
+      "已触发提醒保留触发价与触发时间，可一键「按同条件再设一次」"
+     ],
+     "scene": "Meme 币剧烈波动时不被 20 条提醒轰炸；策略币提醒与价格提醒分开展示，互不干扰。",
+     "srcNote": "参考：第三方产品公开描述（防疲劳限流做法），原报告未提供可引用链接。"
+    },
+    {
+     "n": "通知操作按钮",
+     "t": "NOTIFICATION ACTION BUTTONS",
+     "d": "价格提醒通知不用点进 App，长按通知直接选「看 K 线 / 延后 1 小时 / 改提醒价」。",
+     "pts": [
+      "每类通知最多 4 个动作，横幅只显示前 2 个，所以前 2 个放「查看 K 线」「延后 1 小时」，展开后放「调仓/改价」「关闭提醒」",
+      "长按通知才展开按钮，点按钮可不打开 App 执行延后 / 关闭",
+      "「查看 K 线」深链到触发币种的 K 线页并定位到触发价位线"
+     ],
+     "scene": "BTC 突破提醒半夜弹出来：不想起床就点「延后 1 小时」，想看就点「查看 K 线」直接落到突破位置。",
+     "src": [
+      [
+       "通知自定义操作（每类最多 4 个动作）",
+       "https://www.kodeco.com/books/push-notifications-by-tutorials/v3.0/chapters/9-custom-actions"
+      ]
+     ]
+    }
+   ]
+  },
+  {
+   "id": "crypto-s5",
+   "no": "28",
+   "cn": "虚拟币 · 筛选与榜单",
+   "en": "Crypto · Screening & Leaderboards",
+   "items": [
+    {
+     "n": "涨幅榜 / 跌幅榜 / 新币榜 / 热门榜",
+     "t": "LEADERBOARDS",
+     "d": "四个榜回答四个问题：谁在涨、谁在跌、谁刚来、谁被看。",
+     "pts": [
+      "榜单顶部可切换周期（1h / 24h / 7d）；涨幅榜与跌幅榜左右分栏或上下 Tab",
+      "新币榜按「上币时间 + 流动性门槛」过滤（如 24h 量约 >$100K 才上榜，防空气币刷榜）",
+      "热门榜按搜索量 / 浏览量 / 持仓人数综合，而非只按涨幅；每榜约取 Top 20–50，底部「查看全部」"
+     ],
+     "scene": "早盘先看热门榜找共识币，再看涨幅榜找动量币，最后看新币榜找早期机会。",
+     "src": [
+      [
+       "CoinGecko 涨幅榜",
+       "https://www.coingecko.com/?page=10&items=300"
+      ],
+      [
+       "Dexscreener 新币/热门",
+       "https://dexscreener.com/new-pairs?ran"
+      ]
+     ]
+    },
+    {
+     "n": "多条件筛选器",
+     "t": "MULTI-CONDITION SCREENER",
+     "d": "用市值、量、涨跌、换手等多条件筛出「符合策略的币池」。",
+     "pts": [
+      "维度：市值区间、24h 量、24h 涨跌幅、换手率（量/市值）、价格区间、链/板块",
+      "每个维度用区间滑杆 + 数字输入双控；结果实时计数（「符合 23 个币」）",
+      "筛选条件以 Chip 形式贴在结果顶部，可逐个删除"
+     ],
+     "scene": "筛「市值 >$1B 且 24h 量 >$100M 且 24h 涨幅 5%–20%」→ 得到可做趋势策略的主流币池。",
+     "src": [
+      [
+       "BitScreener 涨跌榜",
+       "https://bitscreener.com/crypto-gainers-losers"
+      ],
+      [
+       "多条件筛选器",
+       "https://bitlogic.info/crypto-screener/"
+      ]
+     ]
+    },
+    {
+     "n": "自定义筛选与保存",
+     "t": "SAVED SCREENERS",
+     "d": "筛一次，保存成「策略选币器」，每天一键重跑。",
+     "pts": [
+      "保存时命名（如「放量突破池」），可设每日定时重跑并推送新增币",
+      "保存的筛选器显示在榜单页顶部横向 Chip 栏",
+      "支持复制 / 分享筛选条件（口令或链接），接收方一键导入"
+     ],
+     "scene": "保存「网格候选：市值大、波动率适中、非 Meme」筛选器，每周重跑更新网格池。",
+     "src": [
+      [
+       "多条件筛选器",
+       "https://bitlogic.info/crypto-screener/"
+      ],
+      [
+       "CoinMarketCap Watchlist",
+       "https://coinmarketcap.com/watchlist/5fffb8b1ec49bb00128d52e4/"
+      ]
+     ]
+    },
+    {
+     "n": "市场热力图",
+     "t": "MARKET HEATMAP",
+     "d": "一屏看全市场：方块越大市值越大，颜色越浓涨跌越大。",
+     "pts": [
+      "方块面积 ∝ 市值（或可选 ∝ 24h 量），颜色 ∝ 涨跌幅（分档：约 ±2% / ±5% / ±10% 渐变）",
+      "点方块进币种详情；支持按板块分组（L1 / DeFi / Meme / AI）",
+      "移动端默认约显示 Top 30–50，缩放可看更多；提供「按市值 / 按涨跌着色」切换"
+     ],
+     "scene": "大盘普跌时一眼看到「只有 AI 板块在涨」→ 板块轮动判断；BTC 独跌而山寨普涨 → 山寨季信号。",
+     "src": [
+      [
+       "热力图实现（按市值/涨跌着色）",
+       "https://ath-hunter-webapp.vercel.app/crypto-market-heatmap"
+      ]
+     ]
+    },
+    {
+     "n": "板块轮动榜",
+     "t": "SECTOR ROTATION",
+     "d": "不只看单个币，看「哪个板块在吸金」。",
+     "pts": [
+      "板块卡片：板块名、24h 均涨跌、领涨币、板块市值",
+      "点板块进该板块币列表",
+      "板块涨跌用横条对比（正负双向条）"
+     ],
+     "scene": "Meme 板块 24h +12% 而 L1 板块 −2% → 资金在投机端，网格策略应降低 Meme 仓位权重。",
+     "src": [
+      [
+       "CoinGecko 板块榜单范式",
+       "https://www.coingecko.com/?page=10&items=300"
+      ]
+     ]
+    },
+    {
+     "n": "摇一摇随机币",
+     "t": "SHAKE TO DISCOVER",
+     "d": "摇一下手机，随机翻出一个币的卡片，像开盲盒一样发现冷门币。",
+     "pts": [
+      "触发阈值约加速度峰值 >2.5g 且间隔 ≥3 秒防连摇",
+      "随机池默认 = 自选外市值前 200 且 24h 换手达标的币，可筛「只看 AI / 只看新币」",
+      "翻出卡片做约 0.5 秒翻牌动画 + 轻震动；连续摇 3 次内不重复；卡片上直接有「加自选 / 看 K 线」两个按钮"
+     ],
+     "scene": "选币枯竭时摇一摇，从没听过的 Layer2 里翻到一个，再决定是否深入研究。",
+     "srcNote": "【提案】摇动触发与防抖为设计值；无同款公开加密产品佐证，不宜写成「某 App 已有」。",
+     "tag": "提案"
+    }
+   ]
+  },
+  {
+   "id": "crypto-s6",
+   "no": "29",
+   "cn": "虚拟币 · 持仓与收益",
+   "en": "Crypto · Portfolio",
+   "items": [
+    {
+     "n": "持仓总览",
+     "t": "PORTFOLIO OVERVIEW",
+     "d": "一屏回答「我有多少钱、今天赚赔多少、风险在哪」。",
+     "pts": [
+      "顶部：总资产（大字）+ 今日盈亏（金额 + %，颜色跟随涨跌约定）+ 昨日对比",
+      "下方持仓列表：币、数量、均价、现价、盈亏；可按币种 / 交易所 / 钱包分组",
+      "总资产可「隐藏金额」（眼睛图标，防偷窥）"
+     ],
+     "scene": "早晨打开先看总资产与今日盈亏，再决定是否调仓，不必逐个币算。",
+     "src": [
+      [
+       "CoinMarketCap Portfolio 指南",
+       "https://coinmarketcap.com/academy/ru/article/the-complete-guide-to-crypto-portfolio-management"
+      ]
+     ]
+    },
+    {
+     "n": "盈亏曲线图",
+     "t": "P&L CURVE",
+     "d": "资产曲线 + 基准曲线同图，判断「跑赢还是跑输大盘」。",
+     "pts": [
+      "曲线：组合净值 vs BTC（或持仓加权基准）；周期切换 7d / 30d / 90d / 全部",
+      "点按曲线显示该日净值与盈亏；曲线下方标注最大回撤区间（阴影）",
+      "支持切换「金额 / 百分比」两种纵轴"
+     ],
+     "scene": "组合 30 天 +20% 但 BTC +35% → 虽然赚钱但跑输基准，策略需复盘。",
+     "src": [
+      [
+       "回测可视化三件套",
+       "https://pypi.org/project/crypto-backtester-binance/1.0.0/"
+      ]
+     ]
+    },
+    {
+     "n": "仓位占比饼图 / 条形图",
+     "t": "ALLOCATION DONUT / BAR",
+     "d": "仓位结构一眼可见：谁占大头、谁是小仓试水。",
+     "pts": [
+      "环形图每块标注代码 + %，点块高亮对应持仓行；占比 <约 2% 的小币合并为「其他」",
+      "币多时备选横条图：长度 ∝ 占比",
+      "超配提示：单一币约 >50% 时出现「集中度风险」小字"
+     ],
+     "scene": "BTC 占 60%、ETH 25%、其余 15% → 结构健康；某 Meme 币不知不觉涨到 40% → 提示再平衡。",
+     "src": [
+      [
+       "CoinMarketCap Portfolio",
+       "https://coinmarketcap.com/academy/ru/article/the-complete-guide-to-crypto-portfolio-management"
+      ],
+      [
+       "Binance 系小组件配置 breakdown",
+       "https://appagg.com/macos/finance/crypto-widgets-for-binance-39755927.html?hl=es"
+      ]
+     ]
+    },
+    {
+     "n": "加仓 / 减仓的交互反馈",
+     "t": "ADD / TRIM FEEDBACK",
+     "d": "加仓 / 减仓不是静默改数字，要即时看到「仓位与均价变了多少」。",
+     "pts": [
+      "操作后约 300ms 内：持仓行数字滚动到新值 + 均价变化小字标注（如「均价 $62,000 → $61,200」）+ Toast「已加仓 0.05 BTC」",
+      "提供「撤销」约 5 秒",
+      "大额操作（约 >总资产 10%）先弹确认面板，列出新仓位占比与预估滑点"
+     ],
+     "scene": "BTC 跌破支撑时加仓，立刻看到均价被拉低多少、仓位占比从 40%→48%，避免重复加仓。",
+     "src": [
+      [
+       "Kraken 式订单反馈范式",
+       "https://dev.to/iri_denis/how-to-design-a-user-friendly-crypto-exchange-interface-from-a-developers-perspective-23kj"
+      ]
+     ]
+    },
+    {
+     "n": "收益率计算器",
+     "t": "RETURN CALCULATOR",
+     "d": "输入「买了多少、在什么价」，立刻算出「现在值多少、赚赔多少、要涨多少回本」。",
+     "pts": [
+      "输入：数量、买入价、现价自动填；输出：现值、盈亏金额/%、回本价、翻倍价",
+      "滑杆调「目标价」实时看目标收益",
+      "结果可一键「设为提醒」（目标价 = 提醒价，与价格提醒联动）"
+     ],
+     "scene": "被套的 SOL：买入价 $180、现价 $140，计算器显示「需涨 28.6% 回本」，并一键设 $180 提醒。",
+     "src": [
+      [
+       "CoinMarketCap Portfolio 计算逻辑",
+       "https://coinmarketcap.com/academy/ru/article/the-complete-guide-to-crypto-portfolio-management"
+      ]
+     ]
+    }
+   ]
+  },
+  {
+   "id": "crypto-s7",
+   "no": "30",
+   "cn": "虚拟币 · 量化策略与回测",
+   "en": "Crypto · Strategy & Backtest",
+   "items": [
+    {
+     "n": "策略列表",
+     "t": "STRATEGY LIST",
+     "d": "策略像「商品卡」一样可比：名字、逻辑一句话、近 30 天收益、回撤、状态。",
+     "pts": [
+      "卡片字段：策略名（网格 / 定投 / 双均线 / RSI 反转）、适用币种、周期、近 30d 收益、最大回撤、状态（运行中 / 已暂停 / 回测中）",
+      "点按进详情，右滑可「暂停 / 删除」",
+      "按「运行中优先、收益排序」排列"
+     ],
+     "scene": "BTC 网格、ETH 定投、SOL 双均线三张卡并排，先看回撤再看收益，避免只追高收益策略。",
+     "src": [
+      [
+       "网格/DCA 策略公开描述",
+       "https://quantumgridbot.com/"
+      ],
+      [
+       "Binance 网格回测警示",
+       "https://dev.to/aduenasdev/i-backtested-the-most-popular-binance-grid-bots-on-4-years-of-real-data-1gnb"
+      ]
+     ]
+    },
+    {
+     "n": "回测结果可视化",
+     "t": "BACKTEST VISUALIZATION",
+     "d": "回测不是一张截图，而是「策略曲线 vs 基准 + 关键指标 + 回撤阴影」三件套。",
+     "pts": [
+      "主图：策略净值曲线 vs 买入持有（Buy & Hold）基准曲线，双色区分",
+      "指标行：总收益、年化（约）、最大回撤、夏普比率、胜率、交易次数；回撤区间在图上用阴影标出最低点",
+      "必须同时标注回测区间、手续费假设、滑点假设；警示文案「过往回测不代表未来收益」"
+     ],
+     "scene": "网格策略回测（公开回测文章的结论）：震荡市 +8%，牛市仅 +7% 而同期持有 +127% → 网格是「波动收割」而非「牛市神器」。",
+     "src": [
+      [
+       "回测指标三件套",
+       "https://pypi.org/project/crypto-backtester-binance/1.0.0/"
+      ],
+      [
+       "网格回测诚实结论",
+       "https://dev.to/aduenasdev/i-backtested-the-most-popular-binance-grid-bots-on-4-years-of-real-data-1gnb"
+      ],
+      [
+       "网格机制解释",
+       "https://tradingstrategies.work/blog/grid-bot-not-a-hedge-half-a-portfolio-in-cash"
+      ]
+     ]
+    },
+    {
+     "n": "参数滑杆调参与实时预览",
+     "t": "PARAMETER SLIDERS WITH LIVE PREVIEW",
+     "d": "拖滑杆，收益曲线与关键指标即时跟着变，不用点「运行回测」才看到结果。",
+     "pts": [
+      "滑杆：网格间距（约 0.5%–5%）、网格数（约 10–100 格）、均线周期（约 5–200）、RSI 阈值（约 20–80）",
+      "拖动时防抖约 300ms 后重算并淡入新曲线；滑杆旁实时显示当前值与回测收益/回撤小字",
+      "提供「重置默认」与「保存为新策略」；参数敏感时提示（如间距缩小 0.5% 会使交易次数约翻倍）"
+     ],
+     "scene": "调网格间距从 2%→1%，实时看到交易次数上升、手续费侵蚀收益，判断最优间距。",
+     "src": [
+      [
+       "网格参数优化（间距档位扫描）",
+       "https://nikofischer.com/grid-trading-strategy-implementation"
+      ]
+     ]
+    },
+    {
+     "n": "信号列表",
+     "t": "SIGNAL TIMELINE",
+     "d": "买入 / 卖出信号按时间轴排列，点信号定位到当时 K 线。",
+     "pts": [
+      "每个信号点标注 B（买入）/ S（卖出，颜色按涨跌约定），附时间、价格、触发条件（如「MA7 上穿 MA25」）、当时 RSI/MACD 值",
+      "点信号 → K 线自动跳转到该时间并弹出十字光标",
+      "可按买入 / 卖出 / 全部过滤；连续假信号密集时自动聚合（如「3 个信号：2 买 1 卖」）"
+     ],
+     "scene": "复盘双均线策略：看最近 10 个信号里有几个是「刚金叉就反转」的假信号，决定是否加 RSI 过滤。",
+     "src": [
+      [
+       "MACD/RSI 信号条件",
+       "https://my.tradingview.com/scripts/n-macd/?script_access=all&script_type=indicators"
+      ]
+     ]
+    },
+    {
+     "n": "策略启停开关与状态反馈",
+     "t": "STRATEGY TOGGLE & STATUS",
+     "d": "开关一拨，策略状态、资金状态、风险状态三处同步反馈。",
+     "pts": [
+      "开关触摸区约 44pt；开启时先弹二次确认面板（策略名、币种、投入金额、风险提示）",
+      "开启后状态灯变绿 + 文案如「运行中 · 已运行 3 天 · 当前网格 42/100」",
+      "异常（价格出区间 / 余额不足）时：红点 + 推送，如「策略因价格超出网格区间已暂停，是否扩大区间？」；开关操作约 1 秒内给反馈，不静默"
+     ],
+     "scene": "BTC 跌出网格下沿，策略自动暂停并推送，用户一键选「扩大区间 10%」或「停止并卖出持仓」。",
+     "src": [
+      [
+       "网格区间外行为",
+       "https://dev.to/aduenasdev/i-backtested-the-most-popular-binance-grid-bots-on-4-years-of-real-data-1gnb"
+      ],
+      [
+       "Material 3 组件范式",
+       "https://composables.com/jetpack-compose/androidx.compose.material3/material3/components/BottomSheet/api"
+      ]
+     ]
+    },
+    {
+     "n": "策略对比",
+     "t": "STRATEGY COMPARISON",
+     "d": "两个策略同币同周期对比，胜负一目了然。",
+     "pts": [
+      "对比表：收益、回撤、夏普、胜率、交易次数、手续费占比；曲线同图双线",
+      "差异高亮（如回撤小的一方标「更稳」）",
+      "对比结果可分享为图片（带回测区间与免责声明）"
+     ],
+     "scene": "同一 BTC 区间：网格 vs 定投 vs 持有，三线同图，决定震荡市用哪个。",
+     "src": [
+      [
+       "网格 vs 持有同窗口对比",
+       "https://tradingstrategies.work/blog/grid-bot-not-a-hedge-half-a-portfolio-in-cash"
+      ]
+     ]
+    }
+   ]
+  },
+  {
+   "id": "crypto-s8",
+   "no": "31",
+   "cn": "虚拟币 · 订单簿与交易",
+   "en": "Crypto · Order Book & Trading",
+   "items": [
+    {
+     "n": "买卖盘口深度条",
+     "t": "ORDER BOOK DEPTH BARS",
+     "d": "每档挂单量用背景条长度表示，哪里有墙一眼可见。",
+     "pts": [
+      "卖盘在上（红）/ 买盘在下（绿），中间为最新价与标记价（COINQ 盘口结构）",
+      "每行：价格、数量、累计量，背景条长度 ∝ 该档量 / 盘口最大量",
+      "档位聚合可调（如 0.1 / 1 / 10 USDT，视币价而定）；大单墙（约 >盘口均量 5 倍）用更深色 + 「墙」标识"
+     ],
+     "scene": "BTC 卖盘在 $92,000 堆了 500 BTC 大墙 → 突破前不宜追多；买盘墙在 $85,000 → 跌破前有支撑。",
+     "src": [
+      [
+       "COINQ 盘口结构说明",
+       "https://support.coinq.com/hc/en-001/articles/49172521811609-Contract-Order-Book-and-Market-Depth-APP"
+      ],
+      [
+       "深度条读取方法",
+       "https://blog.bitval.com/order-books-and-market-depth-how-to-read-liquidity-before-you-trade/"
+      ]
+     ]
+    },
+    {
+     "n": "盘口点击快速填价",
+     "t": "CLICK-TO-FILL PRICE",
+     "d": "点盘口某一档，价格自动填入下单框，不用手输。",
+     "pts": [
+      "点卖盘档 → 填为买入价；点买盘档 → 填为卖出价（或按方向自动判断）",
+      "填价后下单框价格数字滚动到新值 + 轻震动",
+      "填价不自动下单，必须再点确认（防误触）；长按某档可填该档累计量对应的数量（进阶）"
+     ],
+     "scene": "想在卖一价快速买入：点卖一档 → 价格已填好 → 只需输数量 → 确认，避免手输错一位小数。",
+     "src": [
+      [
+       "盘口分交易所拆分（进阶）",
+       "https://medium.com/@tabmydata/one-exchanges-order-book-is-only-part-of-the-picture-bc80ed1db41a"
+      ]
+     ]
+    },
+    {
+     "n": "委托下单确认与反馈",
+     "t": "ORDER CONFIRMATION & FEEDBACK",
+     "d": "下单前算清楚，下单后状态实时变，不让用户猜「到底成交没」。",
+     "pts": [
+      "确认面板：方向（买/卖，颜色区分）、价格、数量、总额、预估手续费、滑点提示；市价单额外提示「市价可能滑点」",
+      "提交后按钮变「提交中…」→ 成功变「已委托」+ 震动 → 成交/部分成交实时更新（部分成交显示「已成交 40%」进度）",
+      "失败时红字写清原因（余额不足 / 价格偏离过大）+「重试 / 改价」按钮"
+     ],
+     "scene": "山寨币市价单滑点大：确认页先提示「预估滑点 1.2%，是否改限价」，避免成交价远差于预期。",
+     "src": [
+      [
+       "Kraken 式下单确认范式",
+       "https://dev.to/iri_denis/how-to-design-a-user-friendly-crypto-exchange-interface-from-a-developers-perspective-23kj"
+      ]
+     ]
+    },
+    {
+     "n": "成交记录实时滚动",
+     "t": "LIVE TRADE FEED",
+     "d": "最新成交像瀑布一样实时滚，买卖方向颜色区分。",
+     "pts": [
+      "每行：时间（秒级）、价格、数量；主动买入 / 主动卖出按涨跌约定着色",
+      "新行从顶部插入 + 约 200ms 淡入，旧行下移",
+      "用户上滑看历史时暂停跟随并出现「回到最新」悬浮按钮；高频时约 300ms 合并刷新"
+     ],
+     "scene": "暴涨时成交瀑布全是主动买盘涌入 → 动量确认；瀑布突然全红 → 抛压来临。",
+     "src": [
+      [
+       "盘口与成交实时更新范式",
+       "https://blog.bitval.com/order-books-and-market-depth-how-to-read-liquidity-before-you-trade/"
+      ]
+     ]
+    },
+    {
+     "n": "买卖比例与滑点提示",
+     "t": "BUY/SELL IMBALANCE & SLIPPAGE HINT",
+     "d": "下单框旁边实时告诉你「这单会不会把价格打穿」。",
+     "pts": [
+      "显示：盘口买卖量比（如买:卖 = 1.8:1）、价差（金额 + %）、你的单量占盘口前 5 档总量比例",
+      "单量占比约 >20% 时提示「可能滑点较大，建议分批」",
+      "市价单预估成交均价与最优价的差值直接写出"
+     ],
+     "scene": "小币种盘口薄：下 10 万 USDT 市价单，提示「将穿透 3 档，均价差 2.3%」，用户改限价分批。",
+     "src": [
+      [
+       "深度与滑点关系",
+       "https://blog.bitval.com/order-books-and-market-depth-how-to-read-liquidity-before-you-trade/"
+      ]
+     ]
+    }
+   ]
+  },
+  {
+   "id": "crypto-s9",
+   "no": "32",
+   "cn": "虚拟币 · 资讯与情绪",
+   "en": "Crypto · News & Sentiment",
+   "items": [
+    {
+     "n": "币种新闻流",
+     "t": "COIN NEWS FEED",
+     "d": "每个币的新闻只推与它相关的，标题即带涨跌上下文。",
+     "pts": [
+      "新闻卡：标题、来源、时间（如「x 分钟前」）、相关币标签",
+      "利好 / 利空用小色点标注（需注明为算法/编辑标注，非事实）",
+      "点卡进详情，底部有「相关币种」与「去 K 线」入口；可按全部 / 利好 / 利空 / 官方公告过滤；点新闻可查看新闻时刻在价格线上的位置"
+     ],
+     "scene": "SOL 突然拉升，新闻流顶部即是生态项目空投/升级消息，解释涨因而非盲目追高。",
+     "src": [
+      [
+       "Binance 市场页新闻置顶思路",
+       "https://www.binance.com/en-ZA/square/post/377428296914918"
+      ]
+     ]
+    },
+    {
+     "n": "恐惧贪婪指数仪表盘",
+     "t": "FEAR & GREED GAUGE",
+     "d": "0–100 的半圆仪表，一眼判断市场情绪极端程度。",
+     "pts": [
+      "分档（约，公开分档惯例）：0–24 极度恐惧、25–44 恐惧、45–55 中性、56–75 贪婪、76–100 极度贪婪",
+      "指针动画约 600ms 缓动到新值；下方配昨日值与 7 日迷你曲线",
+      "极端值时配文案「极度恐惧 ≠ 立即反转，可持续数周」，不做「抄底/逃顶」指令"
+     ],
+     "scene": "指数 13（极度恐惧）+ BTC 大跌 → 仪表盘提示「情绪极端，宜控制仓位而非 All-in 抄底」。",
+     "src": [
+      [
+       "恐惧贪婪指数解读",
+       "https://www.terminalcripto.com/en/academy/fear-greed.html"
+      ],
+      [
+       "分档与更新频率",
+       "https://justscreener.com/en/academy/basics/market-sentiment"
+      ]
+     ]
+    },
+    {
+     "n": "资金费率 / 多空比",
+     "t": "FUNDING RATE & LONG/SHORT RATIO",
+     "d": "资金费率告诉你「多头在付多少钱续命」，多空比告诉你「散户站哪边」。",
+     "pts": [
+      "资金费率卡：当前值（如 +0.01%/8h）、年化换算（约 ×3×365）、历史曲线、异常阈值标线（约 ±0.05%/8h；约 0.1%/8h 被公开讨论标记为拥挤）",
+      "多空比卡：数值如 2.1 表示多头账户是空头 2.1 倍，需注明是「账户数比」而非「资金比」；多空双方条形对比",
+      "两者同屏：费率极正 + 多空比极高 = 拥挤信号，配「警惕多杀多」小字"
+     ],
+     "scene": "ETH 资金费率 +0.08%/8h 且多空比 3:1 → 不追多，等费率回落或设回调提醒。",
+     "src": [
+      [
+       "资金费率/多空比定义",
+       "https://justscreener.com/en/academy/basics/market-sentiment"
+      ],
+      [
+       "资金费率拥挤阈值",
+       "https://www.rektcalc.com/dashboard.html"
+      ]
+     ]
+    },
+    {
+     "n": "大户持仓变化",
+     "t": "WHALE POSITION TRACKING",
+     "d": "大户在加仓还是减仓，比散户情绪更值得看。",
+     "pts": [
+      "卡片：大户净持仓变化（24h）、大户多空比、巨鲸转账提醒",
+      "大户地址 / 实体需注明来源（如 Lookonchain 监测、交易所大户数据），不编造具体地址",
+      "变化用箭头 + 金额双写（如「大户净买入 +$120M（24h）」）"
+     ],
+     "scene": "有巨鲸大额 ETH 多单临近清算价的公开报道时，卡片同步提示「该价位附近清算风险高」。",
+     "src": [
+      [
+       "巨鲸清算价监测报道",
+       "https://www.kucoin.com/news/flash/whale-s-214m-eth-long-position-at-risk-of-liquidation-at-2256-45-and-2226-53"
+      ],
+      [
+       "Coinglass 巨鲸提醒",
+       "https://coinbeehub.com/en/basis/market/coinglass"
+      ]
+     ]
+    },
+    {
+     "n": "爆仓热力图 / 清算地图",
+     "t": "LIQUIDATION HEATMAP",
+     "d": "价格上下各有多少仓位会被清算，画成热力条，预判「价格会被磁吸到哪里」。",
+     "pts": [
+      "横轴价格、颜色深浅 ∝ 该价位清算量",
+      "上下方标注如「涨破 $X 将清算 $Y 空单」「跌破 $X 将清算 $Y 多单」",
+      "点热力条某价位显示该价位清算量与主要交易所分布"
+     ],
+     "scene": "据公开解读：BTC 上方堆积大额空单清算、下方堆积多单清算时，突破/跌破关键价都可能加速（空头踩踏或连锁爆仓）。",
+     "src": [
+      [
+       "Coinglass 清算热力图解读",
+       "https://whale-alert.io/stories/84a101273b2fc4/Coinglass-heatmap-801M-of-shorts-above-2149-and-739M-of-longs-below-1960-create-near-2000-liquidation-trap"
+      ],
+      [
+       "BTC 清算阈值报道",
+       "https://www.kucoin.com/news/flash/btc-break-above-84-288-could-trigger-1-149b-in-short-liquidations-on-major-cexs"
+      ]
+     ]
+    }
+   ]
+  },
+  {
+   "id": "crypto-s10",
+   "no": "33",
+   "cn": "虚拟币 · 小组件与快捷入口",
+   "en": "Crypto · Widgets & Shortcuts",
+   "items": [
+    {
+     "n": "桌面小组件（价格 / 涨跌）",
+     "t": "HOME SCREEN WIDGET",
+     "d": "不打开 App 就能看到盯的币现价与涨跌。",
+     "pts": [
+      "尺寸：小（1 币：价 + 涨跌）、中（约 4 币列表）、大（约 8 币 + 迷你图）；点按直达该币详情",
+      "刷新频率受系统限制：iOS 小组件非实时，约 15–30 分钟级刷新，需注明「非实时 tick」，不要承诺秒级",
+      "深色/浅色跟随系统；配置时选币（默认自选前 4 个）"
+     ],
+     "scene": "主屏中号组件常驻 BTC/ETH/SOL/自选 Meme，通勤路上瞥一眼即知大盘方向。",
+     "src": [
+      [
+       "比特币小组件公开描述",
+       "https://www.similarweb.com/es/app/apple/1533333210/vs/6443681340/"
+      ]
+     ]
+    },
+    {
+     "n": "App 内 FAB 展开快捷操作",
+     "t": "EXPANDABLE FAB",
+     "d": "右下角一个主按钮，展开扫码、搜索、提醒三个高频入口。",
+     "pts": [
+      "FAB 约 56dp，点击展开约 3 项（扫码充币/扫合约地址、搜索币种、设提醒），展开动画约 200–300ms，扇形或纵向排列",
+      "展开时背景半透明遮罩，点遮罩收起",
+      "FAB 不遮挡列表最后一条（列表底部留约 88pt 安全区）；交易页隐藏 FAB，避免误触"
+     ],
+     "scene": "线下看到新币合约二维码 → 点 FAB 扫码 → 直接进该币详情（而非先回首页再搜索）。",
+     "src": [
+      [
+       "Material Design 3 FAB / Bottom Sheet 范式",
+       "https://composables.com/jetpack-compose/androidx.compose.material3/material3/components/BottomSheet/api"
+      ]
+     ]
+    },
+    {
+     "n": "通知中心 / 锁屏价格",
+     "t": "LOCK SCREEN PRICE & LIVE ACTIVITY",
+     "d": "锁屏就是盯盘屏：价格、提醒、策略状态不用解锁。",
+     "pts": [
+      "锁屏小组件：1–2 个币现价 + 24h 涨跌（圆形 / 矩形）",
+      "Live Activity（灵动岛 / 锁屏实时活动）：盯盘币现价实时条 + 涨跌幅，触发提醒价时变色并推送；需用户主动开启，超时约 8–12 小时自动结束（iOS 系统限制思路，落地以系统文档为准）",
+      "点 Live Activity 进 App 该币 K 线"
+     ],
+     "scene": "盯 BTC 突破 $92,000：锁屏 Live Activity 常驻现价，突破时灵动岛变色 + 推送，不用反复解锁刷 App。",
+     "src": [
+      [
+       "Binance 系 Live Activity 描述",
+       "https://appagg.com/macos/finance/crypto-widgets-for-binance-39755927.html?hl=es"
+      ],
+      [
+       "Apple 锁屏通知响应",
+       "https://support.apple.com/en-by/guide/iphone/iphcc8f419db/ios"
+      ]
+     ]
+    },
+    {
+     "n": "Apple Watch / 手表端价格",
+     "t": "WATCH GLANCE",
+     "d": "手表只做「一瞥」：价、涨跌、提醒，不做交易。",
+     "pts": [
+      "复杂功能（Complication）：表盘小格显示 1 币价 + 24h 涨跌（两行：代码 + 价、涨跌%）",
+      "点按进手表 App 看约 5–8 个自选币列表",
+      "手表端刷新受系统限制（公开产品描述：约每 30 分钟更新一次），需在角标注明更新时间；只做查看 + 提醒，不做下单/改策略（防误触）"
+     ],
+     "scene": "开会 / 运动时抬腕看 BTC 价与涨跌，跌破提醒时手表震动 + 显示提醒价。",
+     "src": [
+      [
+       "CryptoWatch 等手表复杂功能描述",
+       "https://www.similarweb.com/es/app/apple/1533333210/vs/6443681340/"
+      ]
+     ]
+    },
+    {
+     "n": "App 图标长按快捷入口",
+     "t": "HOME SCREEN QUICK ACTIONS",
+     "d": "主屏长按 App 图标，直达搜索、提醒、自选。",
+     "pts": [
+      "快捷项约 3–4 个：搜索币种、我的自选、设提醒、今日涨幅榜",
+      "点按直达对应页（深链）",
+      "图标角标 = 未读提醒数（与消息数区分）"
+     ],
+     "scene": "收到提醒推送后，长按图标直接进「提醒列表」而非首页。",
+     "src": [
+      [
+       "Apple 支持 · 主屏快捷操作",
+       "https://support.apple.com/en-by/guide/iphone/iphcc8f419db/ios"
+      ]
+     ]
+    },
+    {
+     "n": "图标长按快捷菜单（动态版）",
+     "t": "HOME SCREEN QUICK ACTIONS · DYNAMIC",
+     "d": "在静态快捷入口之上再进一层：菜单固定 4 项 + 1 项随最近浏览动态替换，菜单项还能拖到桌面变成独立图标。",
+     "pts": [
+      "固定 4 个：扫码、搜索币种、快速设提醒、今日涨幅榜；Android 动态快捷方式上限约 5 个，可把「最近看过的 1 个币」动态替换第 4 项",
+      "每项配币种 / 功能图标，长按菜单项可拖到桌面成独立图标",
+      "设提醒项进页后预填当前价上下约 2% 两个快捷档位"
+     ],
+     "scene": "朋友提了个新币，长按图标→搜索币种，3 秒进该币详情；半夜想设 BTC 提醒，长按→快速设提醒，不翻首页。",
+     "src": [
+      [
+       "Android App Shortcuts（静态 / 动态快捷方式）",
+       "https://android.googlesource.com/platform/developers/build/+/736a602f2e61b1130f5f68f36d14afb0f5f2e7f0/prebuilts/gradle/AppShortcuts/"
+      ]
+     ]
+    },
+    {
+     "n": "一键操作小组件",
+     "t": "INTERACTIVE WIDGET BUTTONS",
+     "d": "不打开 App，直接在小组件上点按钮完成加自选、切换币种、手动刷新。",
+     "pts": [
+      "iOS 17+，按钮绑定 AppIntent（非普通 SwiftUI 闭包），执行后调用 WidgetCenter 刷新时间线",
+      "按钮最小触点约 44×44pt；刷新防抖约 30 秒 1 次，避免频繁拉行情",
+      "失败时按钮变灰并显示「稍后重试」，不静默失败"
+     ],
+     "scene": "看盘时把 BTC 从「关注」切到「重点盯盘」；盯 SOL 时一键加自选，回到 App 时已同步。",
+     "src": [
+      [
+       "iOS 17 互动小组件与 App Intents 实践",
+       "https://www.goodrequest.com/blog/app-intents-tips-and-tricks"
+      ]
+     ]
+    },
+    {
+     "n": "智能轮换堆栈",
+     "t": "SMART STACK ROTATION",
+     "d": "一个坑位按时间、地点、使用习惯自动轮换多个小组件，手动上下滑也可切换。",
+     "pts": [
+      "建议固定顺序：早盘→资金费率倒计时，白天→自选榜，晚间→恐惧贪婪",
+      "开启 Smart Rotate，轮换不打断用户正在看的组件（切出后约 5 秒再换）",
+      "堆栈上限各资料说法不一，写「约 7–10 个」"
+     ],
+     "scene": "同一位置早上看结算倒计时、夜里看情绪指数，不用铺满桌面。",
+     "src": [
+      [
+       "Smart Stack 按时间/地点/习惯自动轮换",
+       "https://www.tapsmart.com/tips-and-tricks/smart-stack-widgets/?amp=1"
+      ]
+     ]
+    },
+    {
+     "n": "床头大字价",
+     "t": "STANDBY MODE WIDGET",
+     "d": "手机充电横放时变成床头 / 桌面大字行情屏。",
+     "pts": [
+      "触发：充电 + 横屏；iOS 17+",
+      "大字价字号约 72–96pt，涨跌幅用红/绿大色块；夜间自动降亮度、去彩色（系统 StandBy 的夜间变暗逻辑）",
+      "仅显示 1–2 个币，避免信息过载；每约 1 分钟刷新一次即可"
+     ],
+     "scene": "半夜盯 BTC 突破位、早上起床先看 ETH 隔夜涨跌，不解锁也能瞥一眼。",
+     "src": [
+      [
+       "iOS 17 · StandBy（充电横屏展示与夜间变暗）",
+       "https://en.wikipedia.org/wiki/IOS_17"
+      ]
+     ]
+    },
+    {
+     "n": "控制中心快捷钮",
+     "t": "CONTROL CENTER CONTROLS",
+     "d": "把「查价 / 设提醒 / 切自选币」做成控制中心与锁屏按钮，一滑就到。",
+     "pts": [
+      "iOS 18+ ControlWidget，基于 WidgetKit / App Intents；做 2 个即可：①「一键查价」（点开直达自选第一币 K 线）；②「快速提醒」（点开直达设价提醒页，预填当前价）",
+      "同一控件也可放到锁屏或 Action Button",
+      "图标只能用 SF Symbol / 自定义符号，不能用运行时生成的币种图"
+     ],
+     "scene": "开会、走路时不解锁翻 App，下一滑一点就查 BTC 现价或补一个提醒。",
+     "src": [
+      [
+       "Apple WWDC24 · iOS 18 Controls",
+       "https://developer.apple.com/videos/play/wwdc2024/10157/"
+      ],
+      [
+       "9to5Mac · iOS 18 控制中心控件",
+       "https://9to5mac.com/2024/06/10/developers-toggles-control-center-ios-18/"
+      ]
+     ]
+    },
+    {
+     "n": "分区深链小组件",
+     "t": "WIDGET DEEP-LINK ZONES",
+     "d": "小组件不再「一点全进首页」，点价格进 K 线、点涨跌进榜单、点币名进详情。",
+     "pts": [
+      "中/大号用 Link 给不同区域配不同 URL（如 app://coin/BTC/chart、app://rank/gainers）；小号只能整块 1 个 widgetURL",
+      "每个热区之间留约 8pt 间隔防误触",
+      "冷启动也要能解析 URL 落到对应页，未登录/无数据时落到榜单页兜底"
+     ],
+     "scene": "中号自选组件：点 BTC 行进 BTC K 线，点「+8.2%」进涨幅榜，点标题进自选管理。",
+     "src": [
+      [
+       "WidgetKit 深链（Link / widgetURL）指南",
+       "https://dev.to/arshtechpro/wwdc-2026-widgetkit-foundations-a-practical-guide-for-developers-2o8d"
+      ],
+      [
+       "Binance 小组件（点行进详情页）",
+       "https://www.binance.com/en-NG/support/faq/detail/44741c6a1ff64008826761ee7598d774"
+      ]
+     ]
+    },
+    {
+     "n": "倒计时小组件",
+     "t": "COUNTDOWN WIDGET",
+     "d": "把「还有多久结算/减半」做成可预知时间的倒计时，不用进 App 算。",
+     "pts": [
+      "资金费率：Binance 默认 00:00/08:00/16:00 UTC 每 8 小时结算，倒计时精确到秒，最后 10 分钟变色提醒",
+      "减半：按区块高度推算（约 10 分钟 1 块），只显示「约 X 天 / 约 Y 块」，不承诺具体日期",
+      "WidgetKit 时间线可预填未来条目，适合倒计时；到点后自动切到下一周期"
+     ],
+     "scene": "持 BTC 永续多单，睡前看「距结算 2h13m，当前资金费率 +0.01%」，决定是否提前平仓；减半前 30 天起显示倒计时。",
+     "src": [
+      [
+       "资金费率结算周期（Binance 默认 8 小时）",
+       "https://www.alertachart.com/blog/what-is-funding-rate-crypto"
+      ]
+     ]
+    },
+    {
+     "n": "恐惧贪婪仪表小组件",
+     "t": "FEAR & GREED GAUGE WIDGET",
+     "d": "把 0–100 情绪分做成桌面半圆仪表，极端值一眼识别（App 内仪表盘见 09 类）。",
+     "pts": [
+      "小号：只显示当日分 + 「极度恐惧/贪婪」文字；中号：加昨日/上周/上月对比条",
+      "分段 0–19 极度恐惧、20–39 恐惧、40–59 中性、60–79 贪婪、80–100 极度贪婪；同步频率约每 15 分钟",
+      "进入极端区间（≤20 或 ≥80）时仪表描边加粗/变色，但不做交易建议文案"
+     ],
+     "scene": "大跌后打开桌面先看情绪：分值 12 且昨日 25，提示「情绪已极端」，再结合自己的策略决定是否看抄底信号。",
+     "src": [
+      [
+       "Binance 恐惧贪婪小组件（0–100 分，约 15 分钟同步）",
+       "https://www.binance.com/en-NG/support/faq/detail/44741c6a1ff64008826761ee7598d774"
+      ],
+      [
+       "CMC 恐惧贪婪指数定义",
+       "https://coinmarketcap.com/charts/fear-and-greed-index/"
+      ]
+     ]
+    },
+    {
+     "n": "迷你热力图小组件",
+     "t": "MINI HEATMAP WIDGET",
+     "d": "把全市场涨跌压成一格一币的色块矩阵，桌面上一眼见资金轮动（全屏版见 05 类市场热力图）。",
+     "pts": [
+      "中号约 4×3=12 格，每格 = 币种缩写 + 24h 涨跌幅，涨绿跌红、颜色深浅按 |涨跌幅| 分 3 档",
+      "点格子深链到该币 K 线；刷新约每 30 分钟（与 Binance 热门板块小组件同频）",
+      "超过 12 个只显示自选 / 市值前 12"
+     ],
+     "scene": "早盘 10 秒扫一眼：AI 板块全绿、Meme 全红，判断资金在往哪边轮动，再进榜单细看。",
+     "src": [
+      [
+       "类比：Binance Hot Categories 小组件（约 30 分钟刷新）",
+       "https://www.binance.com/en-NG/support/faq/detail/44741c6a1ff64008826761ee7598d774"
+      ]
+     ]
+    },
+    {
+     "n": "持仓圆环小组件",
+     "t": "PORTFOLIO DONUT WIDGET",
+     "d": "小组件上画持仓占比圆环，BTC 占几成、稳定币留几成一目了然（App 内版见 06 类仓位占比图）。",
+     "pts": [
+      "小号：圆环 + 总资产 + 今日盈亏 3 个数字；中号：圆环旁列前 3 持仓（币种+占比）",
+      "占比变化超约 5 个百分点时圆环做约 0.6 秒补间动画",
+      "金额默认脱敏（显示「***」或仅百分比），点圆环进持仓页才显示明细；不含交易按钮；圆环分段与脱敏做法为【提案】"
+     ],
+     "scene": "牛市冲高后瞥一眼：BTC 占比从 50% 被动涨到 68%，提醒自己是否要再平衡到稳定币。",
+     "src": [
+      [
+       "类比：Binance Earn 小组件（持仓一览 + 上日盈亏）",
+       "https://www.binance.com/en-NG/support/faq/detail/44741c6a1ff64008826761ee7598d774"
+      ]
+     ]
+    },
+    {
+     "n": "语音与快捷指令",
+     "t": "SIRI SHORTCUTS & APP INTENTS",
+     "d": "对 Siri 说「比特币现在多少钱」，或在快捷指令小组件一键跑「加提醒/查持仓」。",
+     "pts": [
+      "暴露 3 个 Intent：查价（返回「BTC $xx,xxx，24h +x.x%」语音播报）、加自选、快速设提醒（参数：币种+触发价）",
+      "同一 Intent 同时用于 Siri、Spotlight、Shortcuts 小组件与互动小组件",
+      "查价类不打开 App 也能出结果，设提醒类打开 App 确认一次；快捷指令小组件小号 1 个、中号约 4 个、大号约 8 个入口"
+     ],
+     "scene": "开车时问价；每天收盘跑一条「查今日盈亏并播报」指令；把「BTC 跌破提醒」存成桌面指令图标。",
+     "src": [
+      [
+       "App Intents 暴露面（Siri / Spotlight / Shortcuts / 控件）",
+       "https://wwdcnotes.com/documentation/wwdc25-244-get-to-know-app-intents/"
+      ]
+     ]
+    },
+    {
+     "n": "一键生成币种卡片图",
+     "t": "SHARE CARD EXTENSION",
+     "d": "把任意币种页一键渲染成带价格、涨跌幅、迷你走势的卡片图分享到社交平台。",
+     "pts": [
+      "卡片尺寸约 1080×1350（竖版社媒）+ 1080×1080（方形）两档",
+      "卡面固定元素：币种图标+名、现价、24h 涨跌、7 日迷你走势、时间戳水印「数据截至 HH:MM」",
+      "分享走系统分享表（UIActivityViewController），同时提供 Share Extension 让用户在别处（如浏览器行情页）也能调起；卡片不含任何「建议买入」文案，不含个人持仓金额"
+     ],
+     "scene": "SOL 单日大涨，详情页点分享→生成卡片→发群聊/朋友圈，别人扫码/点链接回 App 看同一币种。",
+     "src": [
+      [
+       "iOS 分享扩展（接入系统分享表）",
+       "https://getstream.io/chat/docs/sdk/ios/guides/share-extension/"
+      ]
+     ]
+    },
+    {
+     "n": "AR 币种展台",
+     "t": "AR COIN SHOWCASE",
+     "d": "把币做成可放在桌面的 AR 3D 模型，旋转缩放看细节，还能放进真实环境拍照。",
+     "pts": [
+      "用系统 AR Quick Look 打开 USDZ 币模型（BTC 金币、ETH 菱形体等），可旋转缩放、放桌面拍照",
+      "模型文件约 1–5MB/个，仅 Wi-Fi 下预载",
+      "模型只做展示，不影响价格数字可读性，也不承载行情信息"
+     ],
+     "scene": "给朋友安利时，把 ETH 的 3D 币模放桌上转着看细节，拍张照发出去自带话题。",
+     "src": [
+      [
+       "AR Quick Look（系统 USDZ 模型查看器）",
+       "https://www.kodeco.com/books/apple-augmented-reality-by-tutorials/v1.0.ea3/chapters/2-ar-quick-look"
+      ]
+     ]
+    }
+   ]
+  },
+  {
+   "id": "crypto-s11",
+   "no": "34",
+   "cn": "虚拟币 · 状态与反馈",
+   "en": "Crypto · States & Feedback",
+   "items": [
+    {
+     "n": "行情加载骨架屏",
+     "t": "SKELETON SCREEN",
+     "d": "加载时先给「列表 / 图表的骨架」，而不是白屏或全屏转圈。",
+     "pts": [
+      "骨架形状 = 真实布局（币行：圆图标 + 两行文字 + 右侧价格块；K 线：图表矩形 + 周期条）",
+      "微光扫过动画约 1–1.5 秒循环",
+      "加载约 <300ms 时不显示骨架（延迟约 300ms 再显示，防闪烁，公开最佳实践）；加载失败时骨架替换为「加载失败 + 重试」"
+     ],
+     "scene": "打开 App 首屏：先看到自选骨架，约 1 秒后价格逐行填入，感知速度远快于白屏等 1 秒。",
+     "src": [
+      [
+       "骨架屏延迟显示防闪烁",
+       "https://dev.to/helloashish99/skeleton-screens-vs-spinners-perceived-load-time-1nlj"
+      ],
+      [
+       "骨架屏适用场景",
+       "https://dopebase.com/blog/perceived-performance-mobile-apps"
+      ]
+     ]
+    },
+    {
+     "n": "断网 / 行情延迟提示",
+     "t": "OFFLINE & LATENCY BANNER",
+     "d": "没网或行情断了，要明说「现在看到的是旧价」，不要让用户按旧价下单。",
+     "pts": [
+      "顶部常驻横幅（非弹窗）：「网络已断开，显示的是 X 分钟前行情」+「重试」按钮",
+      "行情延迟时价格旁灰色小字「延迟约 Xs」；断网时禁用下单按钮（置灰 + 提示），但允许看已缓存的 K 线与自选",
+      "恢复后自动刷新 + 横幅约 2 秒淡出"
+     ],
+     "scene": "地铁断网时用户看到 BTC 旧价 $89,000，横幅明示「3 分钟前」，避免按旧价判断追涨。",
+     "src": [
+      [
+       "感知性能与离线状态设计",
+       "https://dopebase.com/blog/perceived-performance-mobile-apps"
+      ]
+     ]
+    },
+    {
+     "n": "空自选引导",
+     "t": "EMPTY WATCHLIST ONBOARDING",
+     "d": "空自选不是空白页，而是一次「帮你选第一批币」的引导。",
+     "pts": [
+      "空态插画 + 一句话 + 三个行动：① 一键添加热门（BTC/ETH/SOL，约 3 个）；② 去涨幅榜挑；③ 导入 / 搜索",
+      "首次添加后出现「长按可设提醒/置顶」小提示（仅出现一次）",
+      "空态不推广告币"
+     ],
+     "scene": "新用户注册后自选为空，点「一键添加主流三件套」即有盯盘内容，再慢慢加自己的策略币。",
+     "src": [
+      [
+       "CoinMarketCap Watchlist 引导",
+       "https://coinmarketcap.com/watchlist/5fffb8b1ec49bb00128d52e4/"
+      ]
+     ]
+    },
+    {
+     "n": "数据延迟标识",
+     "t": "DELAYED DATA BADGE",
+     "d": "免费 / 第三方行情有延迟时，延迟时长要写在价格旁边，而不是藏在设置里。",
+     "pts": [
+      "标识样式：价格旁灰色小字（如「延迟 15 分钟」，为任务示例说法、非某数据源实测值）或黄色小点 + 文字",
+      "点标识弹出说明（数据来源、延迟原因、如何升级实时源）",
+      "延迟数据上禁用「按此价下单」快捷入口（或二次确认）；实时与延迟混排时延迟行整行略灰"
+     ],
+     "scene": "免费版用户看某小币行情延迟 15 分钟，标识提醒他「别按这个价挂单」，避免滑点误解。",
+     "src": [
+      [
+       "通用金融 App 合规范式（报告注明：未找到某 App 公开延迟数值作来源）",
+       "https://dopebase.com/blog/perceived-performance-mobile-apps"
+      ]
+     ]
+    },
+    {
+     "n": "数据源与更新时间戳",
+     "t": "DATA SOURCE & TIMESTAMP",
+     "d": "每个关键数字都应能追溯「哪来的、什么时候的」。",
+     "pts": [
+      "详情页底部小字示例：「行情：Binance 现货 · 更新于 19:42:03 · 延迟约 0.5s」",
+      "资金费率 / 多空比注明交易所与统计口径（账户数 vs 持仓量）",
+      "回测页注明数据区间与手续费假设"
+     ],
+     "scene": "两个 App 的 ETH 价差 0.3%，用户看时间戳与来源即知是交易所价差而非 Bug。",
+     "src": [
+      [
+       "多空比口径说明",
+       "https://justscreener.com/en/academy/basics/market-sentiment"
+      ]
+     ]
+    }
+   ]
+  }
+ ];
+
+ CATS = CATS.concat(STYLE_CATS, CRYPTO_CATS);
+
+ var catalog = document.getElementById("catalog");
+    var total = 0;
+    CATS.forEach(function(cat){
+      var sec = document.createElement("section");
+      sec.className = "cat"; sec.id = "cat-" + cat.id; sec.dataset.cat = cat.id;
+      var head = document.createElement("div"); head.className = "cat-head";
+      head.innerHTML = '<span class="no">' + cat.no + '</span><h2>' + esc(cat.cn) + '</h2><span class="en">' + esc(cat.en) + '</span><span class="cnt">' + cat.items.length + ' 条</span>';
+      sec.appendChild(head);
+      var grid = document.createElement("div"); grid.className = "grid";
+      cat.items.forEach(function(it, i){
+        total++;
+        var card = document.createElement("article"); card.className = "card";
+        if (Array.isArray(it)) {
+          card.dataset.adv = it[5] ? "1" : "0";
+          card.dataset.text = (cat.cn + " " + it[0] + " " + it[1] + " " + it[2] + " " + it[3] + " " + it[4]).toLowerCase();
+          card.innerHTML =
+            '<div class="card-top"><span class="idx">' + cat.no + ' \u00b7 ' + (i+1) + '</span>' + (it[5] ? '<span class="badge">进阶版</span>' : '') + '</div>' +
+            '<h3>' + esc(it[0]) + '</h3>' +
+            '<p class="en">' + esc(it[1]) + '</p>' +
+            '<p class="desc">' + esc(it[2]) + '</p>' +
+            '<dl><div class="row"><dt>要点</dt><dd>' + esc(it[3]) + '</dd></div>' +
+            '<div class="row"><dt>场景</dt><dd>' + esc(it[4]) + '</dd></div></dl>';
+        } else {
+          card.dataset.adv = "0";
+          var srcText = it.src ? it.src.map(function(s){ return s[0]; }).join(" ") : "";
+          card.dataset.text = (cat.cn + " " + it.n + " " + it.t + " " + it.d + " " + it.pts.join(" ") + " " + it.scene + " " + (it.srcNote || "") + " " + srcText).toLowerCase();
+          var ptsHtml = it.pts.map(function(p){ return '<li>' + esc(p) + '</li>'; }).join("");
+          var srcHtml = "";
+          if (it.srcNote) srcHtml = '<div class="row"><dt>来源</dt><dd>' + esc(it.srcNote) + '</dd></div>';
+          else if (it.src && it.src.length) srcHtml = '<div class="row"><dt>来源</dt><dd>' + it.src.map(function(s){ return '<a href="' + esc(s[1]) + '" target="_blank" rel="noopener">' + esc(s[0]) + '</a>'; }).join("\uff1b") + '</dd></div>';
+          var swHtml = it.sw ? '<div class="swatches">' + it.sw.map(function(c){ return '<span class="sw" style="background:' + c + '" title="' + c + '"></span>'; }).join("") + '<span class="swhex">' + it.sw.join(" \u00b7 ") + '</span></div>' : "";
+          var demoHtml = it.demo ? '<p class="fontdemo ' + (it.demoCls || "") + '">' + esc(it.demo) + '</p>' : "";
+          card.innerHTML =
+            '<div class="card-top"><span class="idx">' + cat.no + ' \u00b7 ' + (i+1) + '</span>' + (it.tag ? '<span class="badge">' + esc(it.tag) + '</span>' : '') + '</div>' +
+            '<h3>' + esc(it.n) + '</h3>' +
+            '<p class="en">' + esc(it.t) + '</p>' +
+            '<p class="desc">' + esc(it.d) + '</p>' + demoHtml + swHtml +
+            '<dl><div class="row"><dt>要点</dt><dd><ul class="pts">' + ptsHtml + '</ul></dd></div>' +
+            '<div class="row"><dt>场景</dt><dd>' + esc(it.scene) + '</dd></div>' + srcHtml + '</dl>';
+        }
+        grid.appendChild(card);
+      });
+      sec.appendChild(grid);
+      catalog.appendChild(sec);
+    });
+    document.getElementById("statTotal").textContent = total;
+ document.getElementById("statCats").textContent = CATS.length;
+
+    var chips = document.getElementById("chips");
+    CATS.forEach(function(cat){
+      var a = document.createElement("a");
+      a.className = "chip"; a.href = "#cat-" + cat.id;
+      a.innerHTML = esc(cat.cn) + ' <span class="n">' + cat.items.length + '</span>';
+      chips.appendChild(a);
+    });
+    var baseChip = document.createElement("a");
+    baseChip.className = "chip"; baseChip.href = "#cat-base";
+    baseChip.innerHTML = '基础篇索引 <span class="n">41</span>';
+    chips.appendChild(baseChip);
+
+    var baseGroups = document.getElementById("baseGroups");
+    BASE.forEach(function(g){
+      var div = document.createElement("div"); div.className = "base-group";
+      var tags = g[2].map(function(t){ return '<span class="tag">' + esc(t) + '</span>'; }).join("");
+      div.innerHTML = '<h3>' + esc(g[0]) + '<span>' + esc(g[1]) + ' · ' + g[2].length + ' 条</span></h3><div class="tags">' + tags + '</div>';
+      baseGroups.appendChild(div);
+    });
+
+    var q = document.getElementById("q");
+    var advBtn = document.getElementById("advBtn");
+    var countEl = document.getElementById("count");
+    var noresult = document.getElementById("noresult");
+    var baseSec = document.getElementById("cat-base");
+    var advOnly = false;
+
+    function applyFilter(){
+      var term = q.value.trim().toLowerCase();
+      var shown = 0;
+      CATS.forEach(function(cat){
+        var sec = document.getElementById("cat-" + cat.id);
+        var cards = sec.querySelectorAll(".card");
+        var vis = 0;
+        cards.forEach(function(card){
+          var ok = (!term || card.dataset.text.indexOf(term) !== -1) && (!advOnly || card.dataset.adv === "1");
+          card.style.display = ok ? "" : "none";
+          if (ok) vis++;
+        });
+        sec.style.display = vis ? "" : "none";
+        var cnt = sec.querySelector(".cnt");
+        if (cnt) cnt.textContent = term || advOnly ? (vis + " / " + cat.items.length + " 条") : (cat.items.length + " 条");
+        shown += vis;
+      });
+      baseSec.style.display = (term || advOnly) ? "none" : "";
+      countEl.innerHTML = "显示 <b>" + shown + "</b> / " + total + " 条";
+      noresult.style.display = shown ? "none" : "block";
+    }
+    q.addEventListener("input", applyFilter);
+    advBtn.addEventListener("click", function(){
+      advOnly = !advOnly;
+      advBtn.setAttribute("aria-pressed", advOnly ? "true" : "false");
+      applyFilter();
+    });
+    document.getElementById("clearBtn").addEventListener("click", function(){
+      q.value = ""; advOnly = false;
+      advBtn.setAttribute("aria-pressed", "false");
+      applyFilter(); q.focus();
+    });
+    applyFilter();
+    </script>
+  </body>
+</html>
